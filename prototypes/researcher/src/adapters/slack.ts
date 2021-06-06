@@ -1,5 +1,5 @@
 import { App } from "@slack/bolt";
-import db from "../stores/messageArchive";
+import { data_lake } from "../store";
 
 const app = new App({
   token: process.env.SLACK_ACCESS_TOKEN,
@@ -43,7 +43,7 @@ export const getAllChannelMessages: (args: {
     return;
   }
   if (messages.length > 0) {
-    oldest ? db.add(messages) : db.prepend(messages);
+    oldest ? data_lake.add(messages) : data_lake.prepend(messages);
   }
   if (has_more) {
     return await getAllChannelMessages({

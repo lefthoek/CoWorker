@@ -1,19 +1,23 @@
-require("dotenv").config();
-import db from "./stores/messageArchive";
+import { data_lake, links_store } from "./store";
 import { getAllChannelMessages } from "./adapters/slack";
 import generateStats from "./stats";
+// @ts-ignore
+import Mercury from "@postlight/mercury-parser";
+import { v5 as uuid } from "uuid";
+import fs from "fs";
 
 type Records = Record<string, any>[];
 
 const init = async (channelId: string) => {
-  db.hydrate();
-  const oldest = db.getLatestTimestamp();
+  data_lake.hydrate();
+  links_store.hydrate();
+  const oldest = data_lake.getLatestTimestamp();
   if (oldest) {
     await getAllChannelMessages({ channelId, oldest });
   } else {
     await getAllChannelMessages({ channelId });
   }
-  db.dump();
+  data_lake.dump();
 };
 
 const addTextData = (record: Record<string, any>) => {
@@ -22,12 +26,11 @@ const addTextData = (record: Record<string, any>) => {
   // TODO: use proper bucketing algoritm
   const relativeTextLength = Math.floor(absoluteTextLength / 200);
   const results = [...text.matchAll(/(https?|chrome):\/\/[^\s$.?#].[^\>]*/g)];
-  const linkCount = results.length;
-  const links = linkCount ? results.map((r) => r[0]) : [];
+  const links = results.map((r) => r[0]);
 
   return {
     ...record,
-    linkCount,
+    linkCount: results.length,
     links,
     text,
     absoluteTextLength,
@@ -39,15 +42,34 @@ const augmentMessages = (records: Records) => {
   return records.map((r) => addTextData(r));
 };
 
-const getAllLinks = (records: Records) => records.flatMap((r) => r.links);
+const getAllLinks = (records: Records) =>
+  records.flatMap(({ links, ts }) => {
+    return links.map((url: string) => {
+      return { timestamp: ts, url };
+    });
+  });
 
 const main = async () => {
   const channelId = "C01JRFG3CUR";
   init(channelId);
-  const messages = db.getAll();
+  const messages = data_lake.getAll();
   const augmentedMessages = augmentMessages(messages);
   const stats = generateStats(augmentedMessages);
-  console.log(getAllLinks(augmentedMessages));
+  const links = links_store.getAll();
+  for (const { url } of links) {
+    try {
+      const result = await Mercury.parse(url);
+      if (result.url) {
+        const hash = uuid(result.url, "0c39449c-c702-11eb-b8bc-0242ac130003");
+        fs.writeFileSync(`./artifacts/${hash}.json`, JSON.stringify(result));
+        console.log("FOUND", url);
+      } else {
+        console.log("NOT FOUND", url);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 };
 
 main();
