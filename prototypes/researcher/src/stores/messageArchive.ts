@@ -1,7 +1,7 @@
 import fs from "fs";
 
 class Store {
-  archive: any[];
+  archive: { type: string; user: string; text: string; ts: string }[];
 
   constructor() {
     this.archive = [];
@@ -17,6 +17,13 @@ class Store {
 
   dump() {
     fs.writeFileSync("dump.json", JSON.stringify(this.archive));
+  }
+  getSample() {
+    return this.archive.slice(250, 300);
+  }
+
+  getAll() {
+    return this.archive;
   }
 
   hydrate() {

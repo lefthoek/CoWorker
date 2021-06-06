@@ -7,8 +7,7 @@ const app = new App({
 });
 async function showChannels() {
   try {
-    const result = await app.client.conversations.list();
-    console.log(result);
+    return await app.client.conversations.list();
   } catch (error) {
     console.error(error);
   }
@@ -20,13 +19,12 @@ const getChannelMessages: (args: {
   oldest?: string;
 }) => any = async ({ channelId, cursor, oldest }) => {
   try {
-    const result = await app.client.conversations.history({
+    return await app.client.conversations.history({
       channel: channelId,
       oldest,
       inclusive: false,
       cursor,
     });
-    return result;
   } catch (error) {
     console.error(error);
   }
@@ -40,8 +38,6 @@ export const getAllChannelMessages: (args: {
   const result = await getChannelMessages({ channelId, cursor, oldest });
   const { messages, has_more, response_metadata, ...rest } = result;
   const { next_cursor } = response_metadata;
-
-  console.log(response_metadata);
 
   if (messages[0].ts === oldest) {
     return;
