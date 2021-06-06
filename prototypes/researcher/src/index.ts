@@ -21,9 +21,7 @@ const addTextData = (record: Record<string, any>) => {
   const absoluteTextLength = text.length;
   // TODO: use proper bucketing algoritm
   const relativeTextLength = Math.floor(absoluteTextLength / 200);
-  const results = [
-    ...text.matchAll(/(https?|chrome):\/\/[^\s$.?#].[^\s]*[^\>]/gm),
-  ];
+  const results = [...text.matchAll(/(https?|chrome):\/\/[^\s$.?#].[^\>]*/g)];
   const linkCount = results.length;
   const links = linkCount ? results.map((r) => r[0]) : [];
 
