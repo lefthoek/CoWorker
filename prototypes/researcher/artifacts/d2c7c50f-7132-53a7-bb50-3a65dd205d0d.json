@@ -1,1 +1,16 @@
-{"title":"The Hybrid Group featured in Wired","author":null,"date_published":"2015-04-12T22:00:00.000Z","dek":null,"lead_image_url":"https://hybridgroup.com/images/thg-logo-hero.png","content":"<article class=\"entry-content\"><p>The Hybrid Group&#x2019;s own Ringleader Ron Evans got to speak with <a href=\"http://www.wired.com/\">Wired</a> about the Internet of Things and open source robotics. The interview covers our robotics frameworks Cylon.js, Artoo, and Gobot, as well as what direction we see them moving towards in the future.</p><p>Evans also went into detail about his experiences working on Apple&#x2019;s program Hypercard, and how that open source mentality went on to influence The Hybrid Group&#x2019;s other projects such as KidsRuby later on. Read the full article titled &#x201C;Internet of Anything: Simple Tools Make It Possible for Anyone to Hack Robots&#x201D; <a href=\"http://www.wired.com/2015/04/internet-anything-time-everyone-able-hack-robots/\">here</a>.</p></article>","next_page_url":null,"url":"https://hybridgroup.com/blog/2015-04-13-the-hybrid-group-featured-in-wired.html/","domain":"hybridgroup.com","excerpt":"Our software developers and designers specialize in Go, C/C++, JavaScript, Python, IoT Integration, M2M Messaging, Computer Vision, API Design, Embedded Systems, and most importantly, helping you&hellip;","word_count":1,"direction":"ltr","total_pages":1,"rendered_pages":1}
+{
+  "title": "The Hybrid Group featured in Wired",
+  "author": null,
+  "date_published": "2015-04-12T22:00:00.000Z",
+  "dek": null,
+  "lead_image_url": "https://hybridgroup.com/images/thg-logo-hero.png",
+  "content": "<article class=\"entry-content\"><p>The Hybrid Group&#x2019;s own Ringleader Ron Evans got to speak with <a href=\"http://www.wired.com/\">Wired</a> about the Internet of Things and open source robotics. The interview covers our robotics frameworks Cylon.js, Artoo, and Gobot, as well as what direction we see them moving towards in the future.</p><p>Evans also went into detail about his experiences working on Apple&#x2019;s program Hypercard, and how that open source mentality went on to influence The Hybrid Group&#x2019;s other projects such as KidsRuby later on. Read the full article titled &#x201C;Internet of Anything: Simple Tools Make It Possible for Anyone to Hack Robots&#x201D; <a href=\"http://www.wired.com/2015/04/internet-anything-time-everyone-able-hack-robots/\">here</a>.</p></article>",
+  "next_page_url": null,
+  "url": "https://hybridgroup.com/blog/2015-04-13-the-hybrid-group-featured-in-wired.html/",
+  "domain": "hybridgroup.com",
+  "excerpt": "Our software developers and designers specialize in Go, C/C++, JavaScript, Python, IoT Integration, M2M Messaging, Computer Vision, API Design, Embedded Systems, and most importantly, helping you&hellip;",
+  "word_count": 1,
+  "direction": "ltr",
+  "total_pages": 1,
+  "rendered_pages": 1
+}

@@ -61,7 +61,10 @@ const main = async () => {
       const result = await Mercury.parse(url);
       if (result.url) {
         const hash = uuid(result.url, "0c39449c-c702-11eb-b8bc-0242ac130003");
-        fs.writeFileSync(`./artifacts/${hash}.json`, JSON.stringify(result));
+        fs.writeFileSync(
+          `./artifacts/${hash}.json`,
+          JSON.stringify(result, null, 2)
+        );
         console.log("FOUND", url);
       } else {
         console.log("NOT FOUND", url);
