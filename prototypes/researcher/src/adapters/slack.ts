@@ -35,7 +35,11 @@ export const getAllChannelMessages: (args: {
   oldest?: string;
   cursor?: string;
 }) => void = async ({ cursor, oldest, channelId }) => {
-  const result = await getChannelMessages({ channelId, cursor, oldest });
+  const result = await getChannelMessages({
+    channelId,
+    cursor,
+    oldest,
+  });
   const { messages, has_more, response_metadata, ...rest } = result;
   const { next_cursor } = response_metadata;
 
@@ -44,6 +48,7 @@ export const getAllChannelMessages: (args: {
   }
   if (messages.length > 0) {
     oldest ? data_lake.add(messages) : data_lake.prepend(messages);
+    data_lake.dump();
   }
   if (has_more) {
     return await getAllChannelMessages({

@@ -18,6 +18,7 @@ class Store {
   }
 
   dump() {
+    console.log(this.archive.length);
     fs.writeFileSync(this.filename, JSON.stringify(this.archive));
   }
   getSample() {
@@ -43,8 +44,7 @@ class Store {
   }
 }
 const data_lake = new Store("data_lake.json");
-const links_store = new Store("links_store.json");
 
-export { data_lake, links_store };
+export { data_lake };
 
 export default Store;
