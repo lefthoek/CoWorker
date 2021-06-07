@@ -1,6 +1,6 @@
 import fs from "fs";
 
-class Store {
+class DataLake {
   archive: Record<string, any>[];
   filename: string;
 
@@ -11,10 +11,12 @@ class Store {
 
   add(records: any[]) {
     this.archive = [...records, ...this.archive];
+    this.dump();
   }
 
   prepend(messages: any[]) {
     this.archive = [...this.archive, ...messages];
+    this.dump();
   }
 
   dump() {
@@ -43,8 +45,5 @@ class Store {
     return this.archive[0] ? this.archive[0].ts : false;
   }
 }
-const data_lake = new Store("data_lake.json");
 
-export { data_lake };
-
-export default Store;
+export default new DataLake("data_lake.json");

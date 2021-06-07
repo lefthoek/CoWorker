@@ -1,5 +1,6 @@
 import { App } from "@slack/bolt";
-import { data_lake } from "../store";
+import { State } from "../types";
+import data_lake from "../stores/data_lake";
 
 const app = new App({
   token: process.env.SLACK_ACCESS_TOKEN,
@@ -34,7 +35,8 @@ export const getAllChannelMessages: (args: {
   channelId: string;
   oldest?: string;
   cursor?: string;
-}) => void = async ({ cursor, oldest, channelId }) => {
+  meta?: State;
+}) => Promise<false | State> = async ({ cursor, meta, oldest, channelId }) => {
   const result = await getChannelMessages({
     channelId,
     cursor,
@@ -44,16 +46,28 @@ export const getAllChannelMessages: (args: {
   const { next_cursor } = response_metadata;
 
   if (messages[0].ts === oldest) {
-    return;
+    return false;
   }
-  if (messages.length > 0) {
-    oldest ? data_lake.add(messages) : data_lake.prepend(messages);
-    data_lake.dump();
+  if (messages.length <= 0) {
+    return false;
   }
+
+  if (oldest) {
+    data_lake.add(messages.slice(0, -1));
+  } else {
+    data_lake.prepend(messages);
+  }
+
+  const latest_message = meta ? meta.latest_message : messages[0].ts;
+  const oldest_message = messages[messages.length - 1].ts;
+
   if (has_more) {
     return await getAllChannelMessages({
       channelId,
       cursor: next_cursor,
+      meta: { oldest_message, latest_message },
     });
   }
+
+  return { latest_message, oldest_message };
 };

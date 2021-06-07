@@ -1,4 +1,5 @@
-import { data_lake } from "./store";
+import data_lake from "./stores/data_lake";
+import app_state from "./stores/app_state";
 import { getAllChannelMessages } from "./adapters/slack";
 import generateStats from "./stats";
 import { v5 as uuid } from "uuid";
@@ -9,8 +10,15 @@ type Records = Record<string, any>[];
 
 const init = async (channelId: string) => {
   data_lake.hydrate();
-  const oldest = data_lake.getLatestTimestamp() || null;
-  await getAllChannelMessages({ channelId, oldest });
+  app_state.hydrate();
+  const { latest_message } = app_state.get();
+  const oldest = latest_message;
+  console.log(oldest);
+  const results = await getAllChannelMessages({ channelId, oldest });
+  if (results) {
+    app_state.set(results);
+  }
+  console.log(data_lake.getAll().length);
 };
 
 const addTextData = (record: Record<string, any>) => {
