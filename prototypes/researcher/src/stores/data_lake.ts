@@ -9,14 +9,12 @@ class DataLake {
     this.filename = filename;
   }
 
-  add(records: any[]) {
-    this.archive = [...records, ...this.archive];
-    this.dump();
+  prepend(message: any) {
+    this.archive = [message, ...this.archive];
   }
 
-  prepend(messages: any[]) {
-    this.archive = [...this.archive, ...messages];
-    this.dump();
+  add(message: any) {
+    this.archive = [...this.archive, message];
   }
 
   dump() {
