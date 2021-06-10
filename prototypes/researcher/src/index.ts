@@ -8,7 +8,6 @@ import { parse, processAll } from "./services/web_parser";
 
 /**
 const init = async (channelId: string) => {
-  data_lake.hydrate();
   app_state.hydrate();
   const state = app_state.get();
   const oldest = state.latest_message;
@@ -24,11 +23,18 @@ const init = async (channelId: string) => {
 
 const main = async () => {
   const channelId = "C01JRFG3CUR";
-  const messageIterator = await getAllChannelMessages({ channelId });
-  for await (const message of messageIterator) {
-    data_lake.add(message);
+  data_lake.hydrate();
+  const timestamp = data_lake.getLatestTimestamp();
+  const messageIterator = await getAllChannelMessages({
+    channelId,
+    oldest: timestamp || undefined,
+  });
+  const newMessageIterator = timestamp
+    ? await data_lake.prepend(messageIterator)
+    : await data_lake.add(messageIterator);
+  for await (const message of newMessageIterator) {
+    console.log(message.ts);
   }
-  data_lake.dump();
   /**
   init(channelId);
   const messages = data_lake.getAll();

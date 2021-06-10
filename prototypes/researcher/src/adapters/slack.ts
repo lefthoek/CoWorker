@@ -33,19 +33,26 @@ const getChannelMessages: (args: {
 export const getAllChannelMessages: (args: {
   channelId: string;
   cursor?: string;
-  meta?: State;
-}) => AsyncGenerator<any> = async function* ({ cursor, meta, channelId }) {
+  oldest?: string;
+}) => AsyncGenerator<Record<string, any>> = async function* ({
+  cursor,
+  channelId,
+  oldest,
+}) {
   const { messages, has_more, response_metadata, ...results } =
     await getChannelMessages({
       channelId,
+      oldest,
       cursor,
     });
-  yield* messages;
+  yield* oldest ? messages.slice(0, -1) : messages;
   if (has_more) {
-    yield* getAllChannelMessages({
+    yield* await getAllChannelMessages({
       channelId,
       cursor: response_metadata.next_cursor,
     });
+  } else {
+    console.log("DONE");
+    return;
   }
-  return "HELLO";
 };

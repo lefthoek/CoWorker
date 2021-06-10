@@ -9,18 +9,27 @@ class DataLake {
     this.filename = filename;
   }
 
-  prepend(message: any) {
-    this.archive = [message, ...this.archive];
+  async *add(messageIterator: AsyncGenerator<Record<string, any>>) {
+    for await (const message of messageIterator) {
+      this.archive = [...this.archive, message];
+      yield message;
+    }
+    return this.dump();
   }
 
-  add(message: any) {
-    this.archive = [...this.archive, message];
+  async *prepend(messageIterator: AsyncGenerator<Record<string, any>>) {
+    for await (const message of messageIterator) {
+      this.archive = [message, ...this.archive];
+      yield message;
+    }
+    return this.dump();
   }
 
   dump() {
     console.log(this.archive.length);
     fs.writeFileSync(this.filename, JSON.stringify(this.archive));
   }
+
   getSample() {
     return this.archive.slice(0, 5);
   }
