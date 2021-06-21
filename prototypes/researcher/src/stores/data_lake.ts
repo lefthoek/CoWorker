@@ -18,10 +18,12 @@ class DataLake {
   }
 
   async *prepend(messageIterator: AsyncGenerator<Record<string, any>>) {
+    const newMessages = [];
     for await (const message of messageIterator) {
-      this.archive = [message, ...this.archive];
+      newMessages.push(message);
       yield message;
     }
+    this.archive = [...newMessages, ...this.archive];
     return this.dump();
   }
 
