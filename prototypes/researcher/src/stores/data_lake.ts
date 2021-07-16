@@ -2,11 +2,15 @@ import fs from "fs";
 
 class DataLake {
   archive: Record<string, any>[];
-  filename: string;
+  fileName: string;
+  dirName: string;
+  path: string;
 
-  constructor(filename: string) {
+  constructor({ fileName, dirName }: { fileName: string; dirName: string }) {
     this.archive = [];
-    this.filename = filename;
+    this.dirName = dirName;
+    this.fileName = fileName;
+    this.path = `${this.dirName}/${this.fileName}`;
   }
 
   async *add(messageIterator: AsyncGenerator<Record<string, any>>) {
@@ -29,7 +33,10 @@ class DataLake {
 
   dump() {
     console.log(this.archive.length);
-    fs.writeFileSync(this.filename, JSON.stringify(this.archive));
+    if (!fs.existsSync(this.dirName)) {
+      fs.mkdirSync(this.dirName);
+    }
+    fs.writeFileSync(this.path, JSON.stringify(this.archive));
   }
 
   getSample() {
@@ -42,10 +49,10 @@ class DataLake {
 
   hydrate() {
     try {
-      const archive = fs.readFileSync(this.filename, "utf-8");
+      const archive = fs.readFileSync(this.path, "utf-8");
       this.archive = JSON.parse(archive);
     } catch {
-      console.log(`new db: ${this.filename}`);
+      console.log(`new db: ${this.path}`);
     }
   }
 
@@ -55,4 +62,7 @@ class DataLake {
   }
 }
 
-export default new DataLake("data_lake.json");
+export default new DataLake({
+  dirName: "./data_lake",
+  fileName: "messages.json",
+});

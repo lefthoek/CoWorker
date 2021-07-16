@@ -38,13 +38,10 @@ const main = async () => {
   for await (const message of newMessageIterator) {
     console.log(message);
   }
+
+  console.log(data_lake.getLatestTimestamp());
   /**
-  const newMessageIterator = timestamp
-    ? await data_lake.prepend(messageIterator)
-    : await data_lake.add(messageIterator);
   const augmentedMessageIterator = await augmentMessages(newMessageIterator);
-  init(channelId);
-  const messages = data_lake.getAll();
   const augmentedMessages = augmentMessages(messages);
   const stats = generateStats(augmentedMessages);
   const links = links_store.getSample() as { url: string; timestamp: string }[];
