@@ -1,68 +1,48 @@
 import fs from "fs";
 
 class DataLake {
-  archive: Record<string, any>[];
-  fileName: string;
+  buffer: Record<string, any>[];
+  latest_message: string | false;
   dirName: string;
-  path: string;
 
-  constructor({ fileName, dirName }: { fileName: string; dirName: string }) {
-    this.archive = [];
+  constructor({ dirName }: { dirName: string }) {
     this.dirName = dirName;
-    this.fileName = fileName;
-    this.path = `${this.dirName}/${this.fileName}`;
+    this.latest_message = false;
+    if (!fs.existsSync(this.dirName)) {
+      console.log(`new datalake: ${this.dirName}`);
+      fs.mkdirSync(this.dirName);
+    }
+    this.buffer = [];
   }
 
-  async *add(messageIterator: AsyncGenerator<Record<string, any>>) {
+  async store(messageIterator: AsyncGenerator<Record<string, any>>) {
+    this.buffer = [];
     for await (const message of messageIterator) {
-      this.archive = [...this.archive, message];
-      yield message;
+      this.buffer.push(message);
+      if (this.buffer.length === 100) {
+        this.dump();
+      }
     }
-    return this.dump();
-  }
-
-  async *prepend(messageIterator: AsyncGenerator<Record<string, any>>) {
-    const newMessages = [];
-    for await (const message of messageIterator) {
-      newMessages.push(message);
-      yield message;
-    }
-    this.archive = [...newMessages, ...this.archive];
     return this.dump();
   }
 
   dump() {
-    console.log(this.archive.length);
-    if (!fs.existsSync(this.dirName)) {
-      fs.mkdirSync(this.dirName);
+    const timestamp = this.getLatestTimestamp();
+    if (!timestamp) {
+      return 0;
     }
-    fs.writeFileSync(this.path, JSON.stringify(this.archive));
-  }
-
-  getSample() {
-    return this.archive.slice(0, 5);
-  }
-
-  getAll() {
-    return this.archive;
-  }
-
-  hydrate() {
-    try {
-      const archive = fs.readFileSync(this.path, "utf-8");
-      this.archive = JSON.parse(archive);
-    } catch {
-      console.log(`new db: ${this.path}`);
-    }
+    const path = `${this.dirName}/${timestamp}.json`;
+    fs.writeFileSync(path, JSON.stringify(this.buffer));
+    this.latest_message =
+      timestamp > this.latest_message ? timestamp : this.latest_message;
+    this.buffer = [];
   }
 
   getLatestTimestamp() {
-    console.log(this.archive.length);
-    return this.archive[0] ? this.archive[0].ts : false;
+    return this.buffer[0] ? this.buffer[0].ts : this.latest_message;
   }
 }
 
 export default new DataLake({
   dirName: "./data_lake",
-  fileName: "messages.json",
 });

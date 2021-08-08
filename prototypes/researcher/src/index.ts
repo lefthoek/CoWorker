@@ -1,45 +1,17 @@
-import data_lake from "./stores/data_lake";
-import app_state from "./stores/app_state";
-import { getAllChannelMessages } from "./adapters/slack";
+import AppState from "./stores/app_state";
+import mine from "./mine";
 import generateStats from "./stats";
-import { v5 as uuid } from "uuid";
-import fs from "fs";
 import { parse, processAll } from "./services/web_parser";
 import { addTextData, augmentMessages } from "./augment";
 
-/**
-const init = async (channelId: string) => {
-  app_state.hydrate();
-  const state = app_state.get();
-  const oldest = state.latest_message;
-  const results = oldest
-    ? await getNewChannelMessages({ channelId, oldest })
-    : await getAllChannelMessages({ channelId });
-  if (results) {
-    app_state.set({ ...state, latest_message: results.latest_message });
-  }
-  console.log(data_lake.getAll().length);
-};
-**/
-
 const main = async () => {
-  const channelId = "C01JRFG3CUR";
-  data_lake.hydrate();
-  const timestamp = data_lake.getLatestTimestamp();
-  console.log(timestamp);
-  const messageIterator = await getAllChannelMessages({
-    channelId,
-    oldest: timestamp || undefined,
-  });
+  const channel_id = "C01JRFG3CUR";
+  const app_state = new AppState(channel_id);
+  const { latest_message } = app_state.get();
+  const new_timestamp = await mine({ channel_id, timestamp: latest_message });
+  app_state.set("latest_message", new_timestamp || latest_message);
+  console.log(app_state.get());
 
-  const newMessageIterator = timestamp
-    ? await data_lake.prepend(messageIterator)
-    : await data_lake.add(messageIterator);
-  for await (const message of newMessageIterator) {
-    console.log(message);
-  }
-
-  console.log(data_lake.getLatestTimestamp());
   /**
   const augmentedMessageIterator = await augmentMessages(newMessageIterator);
   const augmentedMessages = augmentMessages(messages);

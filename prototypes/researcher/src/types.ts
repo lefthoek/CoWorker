@@ -1,7 +1,6 @@
 export type State = {
-  oldest_message?: string;
   latest_message?: string;
-  messages?: [];
+  channel_id?: string;
 };
 
 export type Records = Record<string, any>[];

@@ -2,24 +2,32 @@ import fs from "fs";
 import { State } from "../types";
 
 class AppState {
+  dirName: string;
   filename: string;
   state: State;
 
-  constructor(filename: string) {
-    this.filename = filename;
-    this.state = {};
+  constructor(channel_id: string) {
+    this.dirName = "app_state";
+    this.state = { channel_id };
+    this.filename = `${this.dirName}/${channel_id}.json`;
+    if (!fs.existsSync(this.dirName)) {
+      console.log(`new appState: ${this.dirName}`);
+      fs.mkdirSync(this.dirName);
+    }
+    this.hydrate();
   }
 
   dump() {
     console.log(this.state);
     fs.writeFileSync(this.filename, JSON.stringify(this.state));
   }
+
   get() {
     return this.state;
   }
 
-  set(state: State) {
-    this.state = state;
+  set(key: "latest_message", value: string) {
+    this.state[key] = value;
     this.dump();
   }
 
@@ -31,10 +39,6 @@ class AppState {
       console.log(`new db: ${this.filename}`);
     }
   }
-
-  getLatestTimestamp() {
-    return this.state.latest_message;
-  }
 }
 
-export default new AppState("app_state.json");
+export default AppState;
