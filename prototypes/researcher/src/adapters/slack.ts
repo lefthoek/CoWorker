@@ -16,12 +16,14 @@ async function showChannels() {
 const getChannelMessages: (args: {
   channelId: string;
   cursor?: string;
+  limit?: number;
   oldest?: string;
-}) => any = async ({ channelId, cursor, oldest }) => {
+}) => any = async ({ channelId, cursor, limit = 100, oldest }) => {
   try {
     return await app.client.conversations.history({
       channel: channelId,
       oldest,
+      limit,
       inclusive: false,
       cursor,
     });
@@ -33,22 +35,34 @@ const getChannelMessages: (args: {
 export const getAllChannelMessages: (args: {
   channelId: string;
   cursor?: string;
+  first_page?: boolean;
   oldest?: string;
 }) => AsyncGenerator<Record<string, any>> = async function* ({
   cursor,
   channelId,
+  first_page = true,
   oldest,
 }) {
-  const { messages, has_more, response_metadata, ...results } =
+  const { messages, has_more, response_metadata, ...rest } =
     await getChannelMessages({
       channelId,
+      limit: first_page && oldest ? 101 : 100,
       oldest,
       cursor,
     });
-  yield* oldest ? messages.slice(0, -1) : messages;
+
+  if (!oldest) {
+    yield* messages;
+  } else {
+    let results = first_page ? messages.slice(0, -1) : messages;
+    yield* [...results, { type: "CLUSTER BREAK" }];
+  }
+
   if (has_more) {
     yield* await getAllChannelMessages({
       channelId,
+      oldest,
+      first_page: false,
       cursor: response_metadata.next_cursor,
     });
   } else {
