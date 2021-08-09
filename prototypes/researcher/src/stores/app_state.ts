@@ -26,7 +26,7 @@ class AppState {
     return this.state;
   }
 
-  set(key: "latest_message", value: string) {
+  set(key: "channel_id", value: string) {
     this.state[key] = value;
     this.dump();
   }

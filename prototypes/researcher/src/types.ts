@@ -1,6 +1,11 @@
 export type State = {
-  latest_message?: string;
   channel_id?: string;
 };
+
+export enum StatusCodes {
+  SUCCESS = "success",
+  INFO = "info",
+  ERROR = "error",
+}
 
 export type Records = Record<string, any>[];

@@ -1,13 +1,12 @@
 import fs from "fs";
+import { StatusCodes } from "../types";
 
 class DataLake {
   buffer: Record<string, any>[];
-  latest_message: string | false;
   dirName: string;
 
   constructor({ dirName }: { dirName: string }) {
     this.dirName = dirName;
-    this.latest_message = false;
     if (!fs.existsSync(this.dirName)) {
       console.log(`new datalake: ${this.dirName}`);
       fs.mkdirSync(this.dirName);
@@ -15,8 +14,14 @@ class DataLake {
     this.buffer = [];
   }
 
+  getTimestamps() {
+    const timestamps = fs.readdirSync(this.dirName).map((file) => {
+      return file.replace(/.json$/, "");
+    });
+    return timestamps.sort().reverse();
+  }
+
   async store(messageIterator: AsyncGenerator<Record<string, any>>) {
-    this.buffer = [];
     for await (const message of messageIterator) {
       this.buffer.push(message);
       if (this.buffer.length === 100) {
@@ -27,19 +32,18 @@ class DataLake {
   }
 
   dump() {
-    const timestamp = this.getLatestTimestamp();
+    const timestamp = this.buffer[0] && this.buffer[0].ts;
     if (!timestamp) {
-      return 0;
+      return [StatusCodes.INFO, "no new messages"];
     }
     const path = `${this.dirName}/${timestamp}.json`;
     fs.writeFileSync(path, JSON.stringify(this.buffer));
-    this.latest_message =
-      timestamp > this.latest_message ? timestamp : this.latest_message;
     this.buffer = [];
+    return [StatusCodes.SUCCESS, this.getLatestTimestamp()];
   }
 
   getLatestTimestamp() {
-    return this.buffer[0] ? this.buffer[0].ts : this.latest_message;
+    return this.getTimestamps()[0];
   }
 }
 
