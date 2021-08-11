@@ -4,7 +4,8 @@ import { StatusCodes } from "./types";
 
 const mine = async ({ channel_id }: { channel_id: string }) => {
   const data_lake = new Datalake({ channel_id });
-  const timestamp = data_lake.getLatestTimestamp();
+  const [status, timestamp] = await data_lake.init();
+  console.log(status, timestamp);
   const messageIterator = await getAllChannelMessages({
     channelId: channel_id,
     oldest: timestamp,

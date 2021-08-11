@@ -1,4 +1,4 @@
-import fs from "fs";
+import * as fs from "../adapters/filesystem";
 import { StatusCodes } from "../types";
 
 const CLUSTER_LENGTH = 100;
@@ -7,40 +7,27 @@ class DataLake {
   buffer: Record<string, any>[];
   root_dir_name: string;
   dir_name: string;
+  adapter: any;
 
-  constructor({ channel_id }: { channel_id: string }) {
+  constructor({ channel_id, adapter }: { channel_id: string; adapter?: any }) {
+    this.adapter = adapter || fs;
     this.root_dir_name = "./datalake";
     this.dir_name = `${this.root_dir_name}/${channel_id}/`;
     this.buffer = [];
-    this.init();
   }
 
-  init() {
-    if (!fs.existsSync(this.root_dir_name)) {
-      console.log(`new datalake: ${this.root_dir_name}`);
-      fs.mkdirSync(this.root_dir_name);
-    }
-    if (!fs.existsSync(this.dir_name)) {
-      console.log(`new repo: ${this.dir_name}`);
-      fs.mkdirSync(this.dir_name);
-    }
-    const latest_timestamp = this.getLatestTimestamp();
+  async init() {
+    await this.adapter.touch(this.root_dir_name);
+    await this.adapter.touch(this.dir_name);
+    const latest_timestamp = await this.getLatestTimestamp();
     const latest_file = `${this.dir_name}/${latest_timestamp}.json`;
-    if (fs.existsSync(latest_file)) {
-      const raw_file = fs.readFileSync(latest_file, "utf-8");
-      const records = JSON.parse(raw_file);
-      if (records.length < CLUSTER_LENGTH) {
-        console.log("deleting last incomplete cluster", records.length);
-        fs.unlinkSync(latest_file);
-      }
+    const [status, records] = await this.adapter.readJSON(latest_file);
+    if (status === StatusCodes.SUCCESS && records.length < CLUSTER_LENGTH) {
+      console.log("deleting last incomplete cluster", records.length);
+      this.adapter.deleteFile(latest_file);
     }
-  }
-
-  getTimestamps() {
-    const timestamps = fs.readdirSync(this.dir_name).map((file) => {
-      return file.replace(/.json$/, "");
-    });
-    return timestamps.sort().reverse();
+    const ts = await this.getLatestTimestamp();
+    return [StatusCodes.SUCCESS, await this.getLatestTimestamp()];
   }
 
   async store(messageIterator: AsyncGenerator<Record<string, any>>) {
@@ -53,28 +40,29 @@ class DataLake {
         if (message.type === "CLUSTER BREAK") {
           this.buffer.pop();
         }
-        this.buffer.length && this.dump();
+        await this.dump();
       }
     }
-    this.buffer.length && this.dump();
-    return [StatusCodes.SUCCESS, this.getLatestTimestamp()];
+    await this.dump();
+    const ts = await this.getLatestTimestamp();
+    return [StatusCodes.SUCCESS, ts];
   }
 
-  dump() {
+  async dump() {
     if (!this.buffer || this.buffer.length < 1) {
-      return [StatusCodes.INFO, "no new messages"];
+      return [StatusCodes.INFO, "no more messages to save"];
     }
     const timestamp = this.buffer[0] && this.buffer[0].ts;
     const path = `${this.dir_name}/${timestamp}.json`;
-    fs.writeFileSync(path, JSON.stringify(this.buffer));
-    const status = [StatusCodes.SUCCESS, this.buffer.length, timestamp];
+    this.adapter.writeJSON(path, this.buffer);
+    const numberOfRecords = this.buffer.length;
     this.buffer = [];
-    console.log(status);
-    return status;
+    return [StatusCodes.SUCCESS, numberOfRecords.timestamp];
   }
 
-  getLatestTimestamp() {
-    return this.getTimestamps()[0];
+  async getLatestTimestamp() {
+    const [_, ts] = await this.adapter.timestamps(this.dir_name);
+    return ts ? ts[0] : ts;
   }
 }
 
