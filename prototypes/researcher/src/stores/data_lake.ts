@@ -23,8 +23,8 @@ class DataLake {
     const latest_file = `${this.dir_name}/${latest_timestamp}.json`;
     const [status, records] = await this.adapter.readJSON(latest_file);
     if (status === StatusCodes.SUCCESS && records.length < CLUSTER_LENGTH) {
-      console.log("deleting last incomplete cluster", records.length);
-      this.adapter.deleteFile(latest_file);
+      console.log("deleted last incomplete cluster", records.length);
+      const [status] = await this.adapter.deleteFile(latest_file);
     }
     const ts = await this.getLatestTimestamp();
     return [StatusCodes.SUCCESS, await this.getLatestTimestamp()];
@@ -54,10 +54,14 @@ class DataLake {
     }
     const timestamp = this.buffer[0] && this.buffer[0].ts;
     const path = `${this.dir_name}/${timestamp}.json`;
-    this.adapter.writeJSON(path, this.buffer);
-    const numberOfRecords = this.buffer.length;
-    this.buffer = [];
-    return [StatusCodes.SUCCESS, numberOfRecords.timestamp];
+    const [status] = await this.adapter.writeJSON(path, this.buffer);
+    if (status === StatusCodes.SUCCESS) {
+      const numberOfRecords = this.buffer.length;
+      this.buffer = [];
+      return [StatusCodes.SUCCESS, numberOfRecords, timestamp];
+    } else {
+      return [StatusCodes.ERROR, "Couldn't write chunk", path];
+    }
   }
 
   async getLatestTimestamp() {

@@ -5,7 +5,7 @@ const app = new App({
   token: process.env.SLACK_ACCESS_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
 });
-async function showChannels() {
+export async function showChannels() {
   try {
     return await app.client.conversations.list();
   } catch (error) {
