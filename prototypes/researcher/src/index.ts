@@ -5,17 +5,16 @@ import { parse, processAll } from "./services/web_parser";
 import { addTextData, augmentMessages } from "./augment";
 
 const main = async () => {
-  /**
   const channel_ids = await mine();
-  */
 
+  /**
   const channel_ids = ["C01JRFG3CUR"];
+  */
 
   for (const channel_id of channel_ids) {
     const result = await mineChannel({ channel_id });
     console.log(result);
   }
-  /**
 
   /**
   const augmentedMessageIterator = await augmentMessages(newMessageIterator);
