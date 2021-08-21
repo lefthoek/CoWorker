@@ -2,10 +2,7 @@ import { App } from "@slack/bolt";
 import { State } from "../types";
 
 const app = new App({
-  /**
   token: process.env.SLACK_ACCESS_TOKEN,
-  */
-  token: "xoxb-10875394288-2410496748945-MMRKKzpuMNWWLuOLDiGlPodz",
   signingSecret: process.env.SLACK_SIGNING_SECRET,
 });
 
@@ -17,16 +14,23 @@ export async function showChannels() {
   }
 }
 
+export const joinChannel: (args: { channel_id: string }) => any = async ({
+  channel_id,
+}) => {
+  try {
+    const res = await app.client.conversations.join({ channel: channel_id });
+    console.log(res);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const joinChannels: (args: { channel_ids: string[] }) => any = async ({
   channel_ids,
 }) => {
-  try {
-    for (const channel of channel_ids) {
-      const res = await app.client.conversations.join({ channel });
-      console.log(res);
-    }
-  } catch (error) {
-    console.error(error);
+  for (const channel_id of channel_ids) {
+    const res = await joinChannel({ channel_id });
+    console.log(res);
   }
 };
 
