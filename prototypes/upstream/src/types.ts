@@ -51,7 +51,7 @@ export enum StatusCodes {
 }
 
 export interface FSAdapter {
-  touch: (path: string) => [StatusCodes, string];
+  touch: (path: string) => Promise<[StatusCodes, string]>;
 }
 
 export type LefthoekEventBus = EventBus<LefthoekEvent>;

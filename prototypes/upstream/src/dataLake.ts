@@ -1,4 +1,9 @@
-import { StatusCodes, FSAdapter, DataLakeMetaData } from "./types";
+import {
+  StatusCodes,
+  FSAdapter,
+  SlackOAuthData,
+  DataLakeMetaData,
+} from "./types";
 
 class DataLake {
   buffer: Record<string, any>[];
@@ -23,11 +28,15 @@ class DataLake {
     this.buffer = [];
   }
 
-  async init(): Promise<[StatusCodes, DataLakeMetaData]> {
+  async init({
+    metaData,
+  }: {
+    metaData: SlackOAuthData;
+  }): Promise<[StatusCodes, DataLakeMetaData]> {
     const [status, detail] = await this.adapter.touch(this.root_dir_name);
 
     if (status === StatusCodes.ERROR) {
-      console.log("TEST", detail);
+      console.log("TEST", metaData);
     }
 
     /**
