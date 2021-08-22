@@ -1,21 +1,34 @@
 import { App } from "@slack/bolt";
+import { SlackChannelData } from "./types";
 
 class Slack {
-  app: any;
+  app: InstanceType<typeof App>;
 
   constructor({
-    token,
-    signingSecret,
+    access_token,
+    signing_secret,
   }: {
-    token: string;
-    signingSecret: string;
+    access_token: string;
+    signing_secret?: string;
   }) {
-    this.app = new App({ token, signingSecret });
+    if (!signing_secret) {
+      throw new Error(
+        "The slack signing secret must be set in your environment"
+      );
+    }
+    this.app = new App({ token: access_token, signingSecret: signing_secret });
   }
 
   async getChannelsMetaData() {
     const data = await this.app.client.conversations.list();
-    return data.channels as { id: string; is_archived: boolean }[];
+    if (!data || !data.channels) {
+      throw new Error("no channels");
+    }
+    const channels = data.channels.filter(({ id, is_archived }) => {
+      return !is_archived && id;
+    });
+
+    return channels as SlackChannelData[];
   }
 }
 

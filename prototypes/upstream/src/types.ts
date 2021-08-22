@@ -11,6 +11,11 @@ export type SlackOAuthData = {
   };
 };
 
+export type SlackChannelData = {
+  id: string;
+  is_archived: boolean;
+};
+
 export interface Event {
   detailType: string;
   detail: any;

@@ -6,7 +6,10 @@ const s3 = new AWS.S3();
 class S3Adapter implements FSAdapter {
   bucket_name: string;
 
-  constructor({ bucket_name }: { bucket_name: string }) {
+  constructor({ bucket_name }: { bucket_name?: string }) {
+    if (!bucket_name) {
+      throw new Error("The  bucket name must be set in your environment");
+    }
     this.bucket_name = bucket_name;
   }
   async writeFile({ path, data }: { path: string; data?: any }) {
