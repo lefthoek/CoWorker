@@ -11,7 +11,9 @@ custom:
   event_bus: ${ssm:/${self:custom.parameter_prefix}/event_bus}
   function_prefix: lefthoek-prototype-upstream-${opt:stage}
   oauth: ${self:custom.function_prefix}-oauth
-  mine: ${self:custom.function_prefix}-mine
+  init_team: ${self:custom.function_prefix}-init-team
+  init_channels: ${self:custom.function_prefix}-init-channels
+  mine_channel: ${self:custom.function_prefix}-mine-channel
   function_role: ${ssm:/${self:custom.parameter_prefix}/roles/function}
 
 provider:
@@ -36,8 +38,8 @@ functions:
       SLACK_CLIENT_SECRET: ${env:SLACK_CLIENT_SECRET}
       EVENT_BUS_NAME: ${self:custom.event_bus}
       HANDLER_NAME: ${self:custom.oauth}
-  mine:
-    handler: dist/index.mine
+  initTeam:
+    handler: dist/index.initTeam
     events:
       - eventBridge:
           eventBus: ${self:custom.event_bus}
@@ -45,8 +47,36 @@ functions:
             source:
               - ${self:custom.oauth}
             detail-type:
-              - SLACK_TEAM_ADDED
+              - TEAM_ADDED
     environment:
       DATALAKE_BUCKET: ${self:custom.datalake_bucket}
-      HANDLER_NAME: ${self:custom.mine}
+      HANDLER_NAME: ${self:custom.init_team}
       EVENT_BUS_NAME: ${self:custom.event_bus}
+  initChannels:
+    handler: dist/index.initChannels
+    events:
+      - eventBridge:
+          eventBus: ${self:custom.event_bus}
+          pattern:
+            source:
+              - ${self:custom.init_team}
+            detail-type:
+              - TEAM_REPO_INITIATED
+    environment:
+      DATALAKE_BUCKET: ${self:custom.datalake_bucket}
+      HANDLER_NAME: ${self:custom.init_channels}
+      SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
+      EVENT_BUS_NAME: ${self:custom.event_bus}
+  mineChannel:
+    handler: dist/index.echo
+    events:
+      - eventBridge:
+          eventBus: ${self:custom.event_bus}
+          pattern:
+            source:
+              - ${self:custom.init_channels}
+            detail-type:
+              - CHANNEL_REPO_INITIATED
+              - CHANNEL_REPOS_INITIATED
+    environment:
+      HANDLER_NAME: ${self:custom.mine_channel}

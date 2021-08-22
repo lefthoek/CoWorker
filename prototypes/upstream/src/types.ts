@@ -20,29 +20,65 @@ export interface EventBus<E extends Event> {
   put: (event: E) => Promise<E["detail"]>;
 }
 export enum LefthoekEventType {
-  SLACK_TEAM_ADDED = "SLACK_TEAM_ADDED",
-  SLACK_TEAM_RAW_DATA_UPDATED = "SLACK_TEAM_RAW_DATA_UPDATED",
+  TEAM_ADDED = "TEAM_ADDED",
+  TEAM_RAW_DATA_UPDATED = "TEAM_RAW_DATA_UPDATED",
+  TEAM_REPO_INITIATED = "TEAM_REPO_INITIATED",
+  CHANNEL_REPO_INITIATED = "CHANNEL_REPO_INITIATED",
+  CHANNEL_REPOS_INITIATED = "CHANNEL_REPOS_INITIATED",
 }
 
-export type DataLakeMetaData = { latest_update: string };
-export type LefthoekEventPayload = SlackOAuthData | DataLakeMetaData;
+export type TeamRepoMetaData = {
+  latest_update: string;
+  team_id: string;
+  access_token: string;
+};
+export type ChannelRepoMetaData = {
+  team_id: string;
+  channel_id: string;
+};
+
+export type LefthoekEventPayload =
+  | SlackOAuthData
+  | TeamRepoMetaData
+  | ChannelRepoMetaData
+  | {};
 
 export interface LHEvent extends Event {
   detailType: LefthoekEventType;
   detail: LefthoekEventPayload;
 }
 
-export interface SlackTeamAddedEvent extends LHEvent {
-  detailType: LefthoekEventType.SLACK_TEAM_ADDED;
+export interface TeamAddedEvent extends LHEvent {
+  detailType: LefthoekEventType.TEAM_ADDED;
   detail: SlackOAuthData;
 }
 
-export interface SlackTeamUpdatedEvent extends LHEvent {
-  detailType: LefthoekEventType.SLACK_TEAM_RAW_DATA_UPDATED;
-  detail: DataLakeMetaData;
+export interface TeamRawDataUpdatedEvent extends LHEvent {
+  detailType: LefthoekEventType.TEAM_RAW_DATA_UPDATED;
+  detail: TeamRepoMetaData;
 }
 
-export type LefthoekEvent = SlackTeamAddedEvent | SlackTeamUpdatedEvent;
+export interface TeamRepoInitiatedEvent extends LHEvent {
+  detailType: LefthoekEventType.TEAM_REPO_INITIATED;
+  detail: TeamRepoMetaData;
+}
+
+export interface ChannelReposInitiatedEvent extends LHEvent {
+  detailType: LefthoekEventType.CHANNEL_REPOS_INITIATED;
+  detail: {};
+}
+
+export interface ChannelRepoInitiatedEvent extends LHEvent {
+  detailType: LefthoekEventType.CHANNEL_REPO_INITIATED;
+  detail: ChannelRepoMetaData;
+}
+
+export type LefthoekEvent =
+  | TeamAddedEvent
+  | TeamRepoInitiatedEvent
+  | ChannelRepoInitiatedEvent
+  | ChannelReposInitiatedEvent
+  | TeamRawDataUpdatedEvent;
 
 export enum StatusCodes {
   SUCCESS = "success",
@@ -51,7 +87,9 @@ export enum StatusCodes {
 }
 
 export interface FSAdapter {
-  touch: (path: string) => Promise<[StatusCodes, string]>;
+  touch: ({ path }: { path: string }) => Promise<string>;
+  writeFile: ({ path, data }: { path: string; data?: any }) => Promise<string>;
+  writeJSON: ({ path, data }: { path: string; data: any }) => Promise<string>;
 }
 
 export type LefthoekEventBus = EventBus<LefthoekEvent>;

@@ -15,7 +15,7 @@ export const slack = async (event: SlackOAuthQueryString) => {
   const detail: SlackOAuthData = await response.json();
 
   const reply = await eventBus.put({
-    detailType: LefthoekEventType.SLACK_TEAM_ADDED,
+    detailType: LefthoekEventType.TEAM_ADDED,
     detail,
   });
 
@@ -24,3 +24,5 @@ export const slack = async (event: SlackOAuthQueryString) => {
     body: JSON.stringify(reply, null, 2),
   };
 };
+
+export default slack;

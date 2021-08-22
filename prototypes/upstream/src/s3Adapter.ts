@@ -1,4 +1,7 @@
 import { StatusCodes, FSAdapter } from "./types";
+import AWS from "aws-sdk";
+
+const s3 = new AWS.S3();
 
 class S3Adapter implements FSAdapter {
   bucket_name: string;
@@ -6,9 +9,23 @@ class S3Adapter implements FSAdapter {
   constructor({ bucket_name }: { bucket_name: string }) {
     this.bucket_name = bucket_name;
   }
+  async writeFile({ path, data }: { path: string; data?: any }) {
+    await s3
+      .putObject({
+        Bucket: this.bucket_name,
+        Key: path,
+        Body: data,
+      })
+      .promise();
+    return path;
+  }
 
-  async touch(path: string): Promise<[StatusCodes, string]> {
-    return [StatusCodes.ERROR, path];
+  async writeJSON({ path, data }: { path: string; data: any }) {
+    return await this.writeFile({ path, data: JSON.stringify(data, null, 2) });
+  }
+
+  async touch({ path }: { path: string }) {
+    return await this.writeFile({ path });
   }
 }
 
