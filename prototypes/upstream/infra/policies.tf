@@ -15,3 +15,9 @@ resource "aws_iam_policy" "datalake_bucket_write_access" {
   path   = "/"
   policy = data.aws_iam_policy_document.datalake_bucket_write_access.json
 }
+
+resource "aws_iam_policy" "auth_lookup_table_access" {
+  name = "${local.auth_lookup_table}-access-policy"
+  path   = "/"
+  policy = data.aws_iam_policy_document.auth_lookup_table_access.json
+}

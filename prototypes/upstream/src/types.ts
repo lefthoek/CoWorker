@@ -5,7 +5,7 @@ export type SlackOAuthQueryString = {
 };
 
 export type SlackOAuthData = {
-  access_token: string;
+  access_token?: string;
   team: {
     id: string;
     name: string;
@@ -15,12 +15,6 @@ export type SlackOAuthData = {
 export enum PlatformType {
   SLACK = "SLACK",
 }
-
-export type TeamData = {
-  team_id: string;
-  team_name: string;
-  platform_type: PlatformType;
-};
 
 export type SlackChannelData = {
   id: string;
@@ -45,10 +39,12 @@ export enum LefthoekEventType {
 
 export type TeamRepoMetaData = {
   team_id: string;
-  access_token: string;
+  team_name?: string;
+  platform_type: PlatformType;
+  access_token?: string;
 };
-export type ChannelRepoMetaData = {
-  team_id: string;
+
+export type ChannelRepoMetaData = TeamRepoMetaData & {
   latest_chunk?: string;
   channel_id: string;
 };
@@ -66,7 +62,7 @@ export interface LHEvent extends Event {
 
 export interface TeamAddedEvent extends LHEvent {
   detailType: LefthoekEventType.TEAM_ADDED;
-  detail: SlackOAuthData;
+  detail: SlackOAuthData & { platform_type: PlatformType };
 }
 
 export interface ChannelRawDataUpdatedEvent extends LHEvent {

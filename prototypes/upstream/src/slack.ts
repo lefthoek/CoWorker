@@ -71,7 +71,7 @@ class Slack {
     }
   }
 
-  async *getAllChannelMessages({
+  async *update({
     channel_id,
     cursor,
     first_page,
@@ -108,7 +108,7 @@ class Slack {
     }
 
     if (has_more) {
-      yield* await this.getAllChannelMessages({
+      yield* await this.update({
         channel_id,
         latest_chunk,
         first_page: false,

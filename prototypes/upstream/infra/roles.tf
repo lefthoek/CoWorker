@@ -5,6 +5,7 @@ resource "aws_iam_role" "function_role" {
     aws_iam_policy.datalake_bucket_read_access.arn,
     aws_iam_policy.datalake_bucket_write_access.arn,
     aws_iam_policy.event_bus_write_access.arn,
+    aws_iam_policy.auth_lookup_table_access.arn,
     var.lambda_basic_execution_role
   ]
 }

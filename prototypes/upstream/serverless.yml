@@ -8,6 +8,7 @@ plugins:
 custom:
   parameter_prefix: lefthoek-prototypes
   datalake_bucket: ${ssm:/${self:custom.parameter_prefix}/buckets/datalake}
+  auth_lookup_table: ${ssm:/${self:custom.parameter_prefix}/tables/auth_lookup}
   event_bus: ${ssm:/${self:custom.parameter_prefix}/event_bus}
   function_prefix: lefthoek-prototype-upstream-${opt:stage}
   oauth: ${self:custom.function_prefix}-oauth
@@ -36,6 +37,7 @@ functions:
     environment:
       SLACK_CLIENT_ID: ${env:SLACK_CLIENT_ID}
       SLACK_CLIENT_SECRET: ${env:SLACK_CLIENT_SECRET}
+      AUTH_LOOKUP_TABLE: ${self:custom.auth_lookup_table}
       EVENT_BUS_NAME: ${self:custom.event_bus}
       HANDLER_NAME: ${self:custom.oauth}
   initTeam:
@@ -66,9 +68,11 @@ functions:
       DATALAKE_BUCKET: ${self:custom.datalake_bucket}
       HANDLER_NAME: ${self:custom.init_channels}
       SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
+      AUTH_LOOKUP_TABLE: ${self:custom.auth_lookup_table}
       EVENT_BUS_NAME: ${self:custom.event_bus}
   mineChannel:
     handler: dist/index.mineChannel
+    timeout: 60
     events:
       - eventBridge:
           eventBus: ${self:custom.event_bus}
@@ -80,5 +84,6 @@ functions:
     environment:
       HANDLER_NAME: ${self:custom.mine_channel}
       EVENT_BUS_NAME: ${self:custom.event_bus}
+      AUTH_LOOKUP_TABLE: ${self:custom.auth_lookup_table}
       SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
       DATALAKE_BUCKET: ${self:custom.datalake_bucket}

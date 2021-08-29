@@ -8,7 +8,7 @@ class S3Adapter implements FSAdapter {
 
   constructor({ bucket_name }: { bucket_name?: string }) {
     if (!bucket_name) {
-      throw new Error("The  bucket name must be set in your environment");
+      throw new Error("The bucket name must be set in your environment");
     }
     this.bucket_name = bucket_name;
   }
