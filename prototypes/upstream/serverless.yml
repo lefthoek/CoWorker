@@ -56,6 +56,7 @@ functions:
       EVENT_BUS_NAME: ${self:custom.event_bus}
   initChannels:
     handler: dist/index.initChannels
+    timeout: 60
     events:
       - eventBridge:
           eventBus: ${self:custom.event_bus}
