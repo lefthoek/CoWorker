@@ -8,7 +8,18 @@ export type SlackOAuthData = {
   access_token: string;
   team: {
     id: string;
+    name: string;
   };
+};
+
+export enum PlatformType {
+  SLACK = "SLACK",
+}
+
+export type TeamData = {
+  team_id: string;
+  team_name: string;
+  platform_type: PlatformType;
 };
 
 export type SlackChannelData = {
@@ -26,19 +37,19 @@ export interface EventBus<E extends Event> {
 }
 export enum LefthoekEventType {
   TEAM_ADDED = "TEAM_ADDED",
-  TEAM_RAW_DATA_UPDATED = "TEAM_RAW_DATA_UPDATED",
+  CHANNEL_RAW_DATA_UPDATED = "CHANNEL_RAW_DATA_UPDATED",
   TEAM_REPO_INITIATED = "TEAM_REPO_INITIATED",
   CHANNEL_REPO_INITIATED = "CHANNEL_REPO_INITIATED",
   CHANNEL_REPOS_INITIATED = "CHANNEL_REPOS_INITIATED",
 }
 
 export type TeamRepoMetaData = {
-  latest_update: string;
   team_id: string;
   access_token: string;
 };
 export type ChannelRepoMetaData = {
   team_id: string;
+  latest_chunk?: string;
   channel_id: string;
 };
 
@@ -58,9 +69,9 @@ export interface TeamAddedEvent extends LHEvent {
   detail: SlackOAuthData;
 }
 
-export interface TeamRawDataUpdatedEvent extends LHEvent {
-  detailType: LefthoekEventType.TEAM_RAW_DATA_UPDATED;
-  detail: TeamRepoMetaData;
+export interface ChannelRawDataUpdatedEvent extends LHEvent {
+  detailType: LefthoekEventType.CHANNEL_RAW_DATA_UPDATED;
+  detail: ChannelRepoMetaData;
 }
 
 export interface TeamRepoInitiatedEvent extends LHEvent {
@@ -83,7 +94,7 @@ export type LefthoekEvent =
   | TeamRepoInitiatedEvent
   | ChannelRepoInitiatedEvent
   | ChannelReposInitiatedEvent
-  | TeamRawDataUpdatedEvent;
+  | ChannelRawDataUpdatedEvent;
 
 export enum StatusCodes {
   SUCCESS = "success",
@@ -95,6 +106,7 @@ export interface FSAdapter {
   touch: ({ path }: { path: string }) => Promise<string>;
   writeFile: ({ path, data }: { path: string; data?: any }) => Promise<string>;
   writeJSON: ({ path, data }: { path: string; data: any }) => Promise<string>;
+  readJSON: ({ path }: { path: string }) => Promise<any>;
 }
 
 export type LefthoekEventBus = EventBus<LefthoekEvent>;

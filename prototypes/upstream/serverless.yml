@@ -68,7 +68,7 @@ functions:
       SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
       EVENT_BUS_NAME: ${self:custom.event_bus}
   mineChannel:
-    handler: dist/index.echo
+    handler: dist/index.mineChannel
     events:
       - eventBridge:
           eventBus: ${self:custom.event_bus}
@@ -77,6 +77,8 @@ functions:
               - ${self:custom.init_channels}
             detail-type:
               - CHANNEL_REPO_INITIATED
-              - CHANNEL_REPOS_INITIATED
     environment:
       HANDLER_NAME: ${self:custom.mine_channel}
+      EVENT_BUS_NAME: ${self:custom.event_bus}
+      SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
+      DATALAKE_BUCKET: ${self:custom.datalake_bucket}

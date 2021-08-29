@@ -12,6 +12,7 @@ class S3Adapter implements FSAdapter {
     }
     this.bucket_name = bucket_name;
   }
+
   async writeFile({ path, data }: { path: string; data?: any }) {
     await s3
       .putObject({
@@ -21,6 +22,14 @@ class S3Adapter implements FSAdapter {
       })
       .promise();
     return path;
+  }
+
+  async readJSON({ path }: { path: string }) {
+    const { Body } = await s3
+      .getObject({ Bucket: this.bucket_name, Key: path })
+      .promise();
+    const json = Body ? Body.toString("utf-8") : "{}";
+    return JSON.parse(json);
   }
 
   async writeJSON({ path, data }: { path: string; data: any }) {

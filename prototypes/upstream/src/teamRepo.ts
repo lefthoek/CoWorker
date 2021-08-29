@@ -6,58 +6,80 @@ import {
   TeamRepoMetaData,
 } from "./types";
 
+import ChannelRepo from "./channelRepo";
+
 class TeamRepo {
   team_id: string;
   adapter: FSAdapter;
-  access_token: string;
+  team_meta_path: string;
 
-  constructor({
-    adapter,
-    access_token,
-    team_id,
-  }: {
-    team_id: string;
-    access_token: string;
-    adapter: FSAdapter;
-  }) {
+  constructor({ adapter, team_id }: { team_id: string; adapter: FSAdapter }) {
     this.adapter = adapter;
     this.team_id = team_id;
-    this.access_token = access_token;
+    this.team_meta_path = `${this.team_id}/meta.json`;
   }
 
-  async init({ metaData }: { metaData: SlackOAuthData }) {
+  async init(data?: SlackOAuthData) {
     try {
-      await this.adapter.touch({ path: `${this.team_id}/` });
-      await this.adapter.writeJSON({
-        path: `${this.team_id}/meta.json`,
-        data: metaData,
-      });
-      return await this.getMetaData();
+      return data ? await this.writeMetaData(data) : await this.getMetaData();
     } catch (e) {
+      console.log(e);
       throw new Error("could not initialize team repo");
     }
   }
 
+  async initChannelRepo({ channel_id }: { channel_id: string }) {
+    const channelRepo = new ChannelRepo({
+      team_id: this.team_id,
+      channel_id,
+      adapter: this.adapter,
+    });
+
+    return await channelRepo.init();
+  }
+
+  async updateChannelRepo({ channel_id }: { channel_id: string }) {
+    const channelRepo = new ChannelRepo({
+      team_id: this.team_id,
+      channel_id,
+      adapter: this.adapter,
+    });
+
+    return await channelRepo.init();
+  }
+
   async initChannelRepos({ channels }: { channels: SlackChannelData[] }) {
-    try {
-      for (const channel of channels) {
-        await this.adapter.writeJSON({
-          path: `${this.team_id}/${channel.id}/meta.json`,
-          data: channel,
-        });
-      }
-      return channels;
-    } catch (e) {
-      throw new Error("could not initialize channel repos");
+    const initializedChannels = [];
+    for (const channel of channels) {
+      const initializedChannel = await this.initChannelRepo({
+        channel_id: channel.id,
+      });
+      initializedChannels.push(initializedChannel);
     }
+
+    return initializedChannels;
+  }
+
+  async writeMetaData(data: SlackOAuthData) {
+    await this.adapter.touch({ path: `${this.team_id}/` });
+    await this.adapter.writeJSON({
+      path: this.team_meta_path,
+      data,
+    });
+
+    return {
+      team_id: this.team_id,
+      access_token: data.access_token,
+    };
   }
 
   async getMetaData() {
-    return {
-      team_id: this.team_id,
-      access_token: this.access_token,
-      latest_update: `${Date.now()}`,
-    };
+    const { team_id } = this;
+    const { access_token } = (await this.adapter.readJSON({
+      path: this.team_meta_path,
+    })) as SlackOAuthData;
+
+    return { team_id, access_token };
   }
 }
 

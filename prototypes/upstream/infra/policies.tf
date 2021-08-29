@@ -15,4 +15,3 @@ resource "aws_iam_policy" "datalake_bucket_write_access" {
   path   = "/"
   policy = data.aws_iam_policy_document.datalake_bucket_write_access.json
 }
-

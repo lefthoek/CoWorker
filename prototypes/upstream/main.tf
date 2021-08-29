@@ -26,3 +26,4 @@ module "infra" {
   lambda_basic_execution_role = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
   environment_name = "lefthoek-prototypes"
 }
+
