@@ -15,7 +15,7 @@ const mineChannel = async (event: ChannelRepoInitiatedEvent) => {
     SLACK_SIGNING_SECRET: signing_secret,
     AUTH_LOOKUP_TABLE: table_name,
   } = process.env;
-  const { team_id, platform_type, channel_id, latest_chunk } = event.detail;
+  const { team_id, platform_type, channel_id } = event.detail;
   const authLookup = new AuthLookup({ table_name });
   const { access_token } = await authLookup.get({ team_id, platform_type });
   const slack = new Slack({ access_token, signing_secret });
@@ -26,7 +26,7 @@ const mineChannel = async (event: ChannelRepoInitiatedEvent) => {
     channel_id,
     adapter,
   });
-
+  const { latest_chunk } = await channelRepo.init();
   const messageIterator = await slack.update({ channel_id, latest_chunk });
   const detail = await channelRepo.update({ messageIterator });
   const reply = await eventBus.put({
