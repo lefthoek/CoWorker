@@ -9,14 +9,13 @@ class ChannelRepo {
   path: string;
   cluster_length: number;
   is_updating?: boolean;
-  latest_chunk?: string;
+  chunks: string[];
 
   constructor({
     adapter,
     team_id,
     platform_type,
     channel_id,
-    latest_chunk,
     is_updating,
     cluster_length = 100,
   }: {
@@ -25,9 +24,9 @@ class ChannelRepo {
     platform_type: PlatformType;
     is_updating?: boolean;
     cluster_length?: number;
-    latest_chunk?: string;
     channel_id: string;
   }) {
+    this.chunks = [];
     this.adapter = adapter;
     this.cluster_length = cluster_length;
     this.channel_id = channel_id;
@@ -46,18 +45,41 @@ class ChannelRepo {
           data,
         });
       }
-      return await this.dehydrateState();
+      const s1 = await this.dehydrateState();
+      console.log("STATE1", s1);
+      if (!s1.is_updating) {
+        await this.deleteLatestIncompleteChunk();
+      }
+      const s2 = await this.getMetaData();
+      console.log("STATE2", s2);
+      return s2;
     } catch (e) {
       throw new Error(`could not initialize channel repo ${this.channel_id}`);
     }
   }
 
+  async deleteLatestIncompleteChunk() {
+    try {
+      const [latest_chunk, ...other_chunks] = this.chunks;
+      const path = `${this.path}/${latest_chunk}.json`;
+      const records = await this.adapter.readJSON({ path });
+      if (records.length < this.cluster_length) {
+        console.log(`deleted last incomplete cluster ${path}`, records.length);
+        await this.adapter.deleteFile({ path });
+        this.chunks = other_chunks;
+        return await this.writeMetaData();
+      }
+    } catch {
+      return await this.getMetaData();
+    }
+  }
+
   async dehydrateState() {
     try {
-      const { latest_chunk, is_updating } = await this.adapter.readJSON({
+      const { chunks, is_updating } = await this.adapter.readJSON({
         path: `${this.path}/meta.json`,
       });
-      this.latest_chunk = latest_chunk;
+      this.chunks = chunks;
       this.is_updating = is_updating;
       return await this.getMetaData();
     } catch (e) {
@@ -67,14 +89,13 @@ class ChannelRepo {
   }
 
   async writeMetaData() {
-    const { platform_type, team_id, channel_id, latest_chunk, is_updating } =
-      this;
+    const { platform_type, team_id, channel_id, chunks, is_updating } = this;
     const data = {
       team_id,
       platform_type,
       is_updating,
       channel_id,
-      latest_chunk,
+      chunks,
     };
     await this.adapter.writeJSON({ path: `${this.path}/meta.json`, data });
     return data;
@@ -90,8 +111,10 @@ class ChannelRepo {
     await this.adapter.writeJSON({ path, data: this.buffer });
     const number_of_records = this.buffer.length;
     this.buffer = [];
-    this.latest_chunk =
-      chunk > (this.latest_chunk || 0) ? chunk : this.latest_chunk;
+    const newChunks = [chunk, ...this.chunks].sort((a, b) => b - a);
+    console.log("CHUNKS1", newChunks);
+    this.chunks = newChunks;
+    console.log("CHUNKS2", this.chunks);
     return await this.writeMetaData();
   }
 
@@ -128,8 +151,8 @@ class ChannelRepo {
   }
 
   async getMetaData() {
-    const { platform_type, team_id, channel_id, latest_chunk, is_updating } =
-      this;
+    const { platform_type, team_id, channel_id, chunks, is_updating } = this;
+    const latest_chunk = chunks[0];
     return { platform_type, team_id, channel_id, latest_chunk, is_updating };
   }
 }

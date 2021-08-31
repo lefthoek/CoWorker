@@ -24,6 +24,16 @@ class S3Adapter implements FSAdapter {
     return path;
   }
 
+  async deleteFile({ path }: { path: string }) {
+    await s3
+      .deleteObject({
+        Bucket: this.bucket_name,
+        Key: path,
+      })
+      .promise();
+    return path;
+  }
+
   async readJSON({ path }: { path: string }) {
     const { Body } = await s3
       .getObject({ Bucket: this.bucket_name, Key: path })
