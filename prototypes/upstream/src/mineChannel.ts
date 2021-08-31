@@ -26,15 +26,21 @@ const mineChannel = async (event: ChannelRepoInitiatedEvent) => {
     channel_id,
     adapter,
   });
-  const { latest_chunk } = await channelRepo.init();
+
+  const { latest_chunk, is_updating } = await channelRepo.init();
+  if (is_updating) {
+    return await eventBus.put({
+      detailType: LefthoekEventType.CHANNEL_REPO_ALREADY_UPDATING,
+      detail: {},
+    });
+  }
+
   const messageIterator = await slack.update({ channel_id, latest_chunk });
   const detail = await channelRepo.update({ messageIterator });
-  const reply = await eventBus.put({
+  return await eventBus.put({
     detailType: LefthoekEventType.CHANNEL_RAW_DATA_UPDATED,
     detail,
   });
-
-  return reply;
 };
 
 export default mineChannel;

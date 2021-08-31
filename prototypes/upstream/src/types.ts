@@ -35,6 +35,7 @@ export enum LefthoekEventType {
   TEAM_REPO_INITIATED = "TEAM_REPO_INITIATED",
   CHANNEL_REPO_INITIATED = "CHANNEL_REPO_INITIATED",
   CHANNEL_REPOS_INITIATED = "CHANNEL_REPOS_INITIATED",
+  CHANNEL_REPO_ALREADY_UPDATING = "CHANNEL_ALREADY_UPDATING",
 }
 
 export type TeamRepoMetaData = {
@@ -75,6 +76,11 @@ export interface TeamRepoInitiatedEvent extends LHEvent {
   detail: TeamRepoMetaData;
 }
 
+export interface ChannelRepoAlreadyUpdatingEvent extends LHEvent {
+  detailType: LefthoekEventType.CHANNEL_REPO_ALREADY_UPDATING;
+  detail: {};
+}
+
 export interface ChannelReposInitiatedEvent extends LHEvent {
   detailType: LefthoekEventType.CHANNEL_REPOS_INITIATED;
   detail: {};
@@ -90,7 +96,8 @@ export type LefthoekEvent =
   | TeamRepoInitiatedEvent
   | ChannelRepoInitiatedEvent
   | ChannelReposInitiatedEvent
-  | ChannelRawDataUpdatedEvent;
+  | ChannelRawDataUpdatedEvent
+  | ChannelRepoAlreadyUpdatingEvent;
 
 export enum StatusCodes {
   SUCCESS = "success",

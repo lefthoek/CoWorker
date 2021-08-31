@@ -8,6 +8,7 @@ class ChannelRepo {
   adapter: FSAdapter;
   path: string;
   cluster_length: number;
+  is_updating?: boolean;
   latest_chunk?: string;
 
   constructor({
@@ -16,11 +17,13 @@ class ChannelRepo {
     platform_type,
     channel_id,
     latest_chunk,
+    is_updating,
     cluster_length = 100,
   }: {
     adapter: FSAdapter;
     team_id: string;
     platform_type: PlatformType;
+    is_updating?: boolean;
     cluster_length?: number;
     latest_chunk?: string;
     channel_id: string;
@@ -30,6 +33,7 @@ class ChannelRepo {
     this.channel_id = channel_id;
     this.platform_type = platform_type;
     this.team_id = team_id;
+    this.is_updating = is_updating;
     this.path = `${this.team_id}/${this.channel_id}`;
     this.buffer = [];
   }
@@ -50,10 +54,11 @@ class ChannelRepo {
 
   async dehydrateState() {
     try {
-      const state = await this.adapter.readJSON({
+      const { latest_chunk, is_updating } = await this.adapter.readJSON({
         path: `${this.path}/meta.json`,
       });
-      this.latest_chunk = state.latest_chunk;
+      this.latest_chunk = latest_chunk;
+      this.is_updating = is_updating;
       return await this.getMetaData();
     } catch (e) {
       console.log(e);
@@ -62,10 +67,12 @@ class ChannelRepo {
   }
 
   async writeMetaData() {
-    const { platform_type, team_id, channel_id, latest_chunk } = this;
+    const { platform_type, team_id, channel_id, latest_chunk, is_updating } =
+      this;
     const data = {
       team_id,
       platform_type,
+      is_updating,
       channel_id,
       latest_chunk,
     };
@@ -93,6 +100,7 @@ class ChannelRepo {
   }: {
     messageIterator: AsyncGenerator<Record<string, any>>;
   }) {
+    await this.lockChannel();
     for await (const message of messageIterator) {
       this.buffer.push(message);
       if (
@@ -105,12 +113,24 @@ class ChannelRepo {
         await this.dump();
       }
     }
-    return await this.dump();
+    await this.dump();
+    return await this.unlockChannel();
+  }
+
+  async lockChannel() {
+    this.is_updating = true;
+    return this.writeMetaData();
+  }
+
+  async unlockChannel() {
+    this.is_updating = false;
+    return this.writeMetaData();
   }
 
   async getMetaData() {
-    const { platform_type, team_id, channel_id, latest_chunk } = this;
-    return { platform_type, team_id, channel_id, latest_chunk };
+    const { platform_type, team_id, channel_id, latest_chunk, is_updating } =
+      this;
+    return { platform_type, team_id, channel_id, latest_chunk, is_updating };
   }
 }
 
