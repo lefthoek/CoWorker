@@ -1,0 +1,13 @@
+body {
+  --cipria: #fcf2f5;
+  --midnight: #32334e;
+  background-color: var(--cipria);
+  color: var(--midnight);
+  width: 100%;
+  height: 100%;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+}
