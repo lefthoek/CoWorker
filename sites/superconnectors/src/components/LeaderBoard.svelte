@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { Contestant } from '$types/models';
 	export let leaderData: Contestant[] = [];
-	import LefthoekLogo from '$components/LefthoekLogo.svelte';
+	import WidgetFrame from '$components/WidgetFrame.svelte';
 </script>
 
-<div class="bg-dark h-full md:h-auto pt-16 p-8 grid grid-cols-10 gap-4 md:rounded-md">
+<WidgetFrame>
 	{#each leaderData as { first_name, contestant_id, score }}
 		<h1 class="font-mono text-background font-normal text-2xl md:text-3xl">
 			{contestant_id}
@@ -16,7 +16,4 @@
 			{score}
 		</h1>
 	{/each}
-	<div class="col-span-10 mt-5 flex justify-end md:justify-start">
-		<LefthoekLogo isInverted={true} class="w-12" />
-	</div>
-</div>
+</WidgetFrame>

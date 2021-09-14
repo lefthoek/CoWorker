@@ -6,6 +6,7 @@
 	<div class="flex flex-col space-y-8">
 		<a class="font-mono font-semibold text-2xl" href="/bulletinboard">Bulletinboard</a>
 		<a class="font-mono font-semibold text-2xl" href="/leaderboard">Leaderboard</a>
+		<a class="font-mono font-semibold text-2xl" href="/madlib">Madlib</a>
 	</div>
 	<div class="col-span-10 mt-5 flex justify-end">
 		<LefthoekLogo class="w-12" />
