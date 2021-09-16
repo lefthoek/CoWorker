@@ -5,14 +5,11 @@
 </script>
 
 <WidgetFrame>
-	{#each leaderData as { first_name, contestant_id, score }}
-		<h1 class="font-mono text-background font-normal text-2xl md:text-3xl">
-			{contestant_id}
-		</h1>
+	{#each leaderData as { first_name, score }}
 		<h1 class="font-mono text-background col-span-7 font-normal text-2xl md:text-3xl">
 			{first_name}
 		</h1>
-		<h1 class="font-mono text-background col-span-2 text-right font-semibold text-2xl md:text-3xl">
+		<h1 class="font-mono text-background col-span-3 text-right font-semibold text-2xl md:text-3xl">
 			{score}
 		</h1>
 	{/each}
