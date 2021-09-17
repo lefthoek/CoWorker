@@ -6,20 +6,32 @@
 		const sc_promise = fetch('/superconnectors.json');
 		const [asks_res, sc_res] = await Promise.all([asks_promise, sc_promise]);
 		const [askData, superconnectors] = await Promise.all([asks_res.json(), sc_res.json()]);
-		gStore.init(askData);
-		gStore.fake(superconnectors);
-		return {};
+		gStore.init(askData, superconnectors);
+
+		return { props: {} };
 	};
 </script>
 
 <script lang="ts">
-	import BulletinBoard from '$components/BulletinBoard.svelte';
+	import BulletinBoard from '$components/BulletinBoard/index.svelte';
 	import LeaderBoard from '$components/LeaderBoard.svelte';
+	let mode = 'master';
+
+	const resetGame = () => {
+		gStore.reset();
+		mode = 'master';
+	};
 </script>
 
 <main class="md:p-8 md:pt-16 md:p-16 flex h-full flex-col justify-between">
 	<div class="w-full h-full space-y-8 max-w-4xl mx-auto">
-		<BulletinBoard on:resolved={(e) => gStore.resolveAsks(e.detail)} askData={$gStore} />
 		<LeaderBoard leaderData={$leaderStore} />
+		<BulletinBoard
+			bind:mode
+			on:resolve={(e) => gStore.resolveAsks(e.detail)}
+			on:addSuperconnector={(e) => gStore.addSuperconnector(e.detail)}
+			askData={$gStore}
+		/>
+		<button class="font-mono font-semibold bg-red-200 p-4" on:click={resetGame}>Reset Game</button>
 	</div>
 </main>

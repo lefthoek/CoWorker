@@ -2,9 +2,11 @@
 	import LefthoekLogo from '$components/LefthoekLogo.svelte';
 </script>
 
-<div class="bg-dark h-full md:h-auto pt-16 p-8 grid grid-cols-10 gap-4 md:rounded-md">
-	<slot />
-	<div class="col-span-10 mt-5 flex justify-end">
+<div class="bg-dark h-full md:h-auto pt-16 p-8 md:rounded-md">
+	<div class="space-y-8">
+		<slot />
+	</div>
+	<div class="mt-10 flex justify-end">
 		<LefthoekLogo isInverted={true} class="w-12" />
 	</div>
 </div>
