@@ -17,6 +17,7 @@
 </script>
 
 <div>
+	<p class="font-mono font-normal text-1xl md:text-2xl grid grid-cols-10">{ask.team}</p>
 	<p class="space-x-4">
 		{#if ask.superconnectors.length}
 			{#each ask.superconnectors as { first_name }}
