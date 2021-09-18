@@ -1,61 +1,59 @@
 import { writable, derived } from 'svelte/store';
 import type { Ask, Contestant } from '$types/models';
 
-export const getRandomSubarray: (arr: any[]) => any[] = (arr) => {
-	const shuffled = arr.slice(0);
-	let i = arr.length;
-	let temp: any;
-	let index: number;
-	const size = Math.ceil(Math.random() * arr.length);
-	while (i--) {
-		index = Math.floor((i + 1) * Math.random());
-		temp = shuffled[index];
-		shuffled[index] = shuffled[i];
-		shuffled[i] = temp;
-	}
-	return shuffled.slice(0, size);
-};
-
-export const asksStore = writable([]);
-
-export const contestantsStore = writable([]);
-
 export const _gStore = () => {
 	const { subscribe, update, set } = writable([]);
 	let initialAsks: Ask[];
-	let initialSuperconnectors: Contestant[];
-	const init = (asks: Ask[], superconnectors: Contestant[]) => {
+	const init = (asks: Ask[]) => {
 		initialAsks = asks;
-		initialSuperconnectors = superconnectors;
 		const mappedAsks = asks.map((ask: Ask) => {
-			return { ...ask, superconnectors: [] };
+			return { ...ask, superconnectors: [], resolved: false };
 		});
 		set(mappedAsks);
 	};
 
-	const resolveAsks = (args: { index: number }) => {
-		return update((asks) =>
+	const toggleResolve = ({ index }: { index: number }) =>
+		update((asks) =>
 			asks.map((ask, i) => {
-				return args.index === i ? { ...ask, resolved: true } : ask;
+				return index === i ? { ...ask, resolved: !ask.resolved } : ask;
 			})
 		);
-	};
-	const addSuperconnector = (args: { index: number }) => {
-		return update((asks) =>
+
+	const addSuperconnector = ({ index, name }: { index: number; name: string }) =>
+		update((asks) =>
 			asks.map((ask, i) => {
-				const scs = getRandomSubarray(initialSuperconnectors);
-				return args.index === i ? { ...ask, superconnectors: scs } : ask;
+				const scsSet = new Set(ask.superconnectors.map(({ first_name }) => first_name));
+				scsSet.add(name);
+				const superconnectors = Array.from(scsSet).map((first_name) => {
+					return {
+						first_name
+					};
+				});
+				return index === i ? { ...ask, superconnectors } : ask;
 			})
 		);
-	};
+
+	const removeSuperconnector = ({ index, name }: { index: number; name: string }) =>
+		update((asks) =>
+			asks.map(({ superconnectors, ...ask }: Ask, i: number) => {
+				const scs =
+					index === i
+						? superconnectors.filter(({ first_name }) => {
+								return name !== first_name;
+						  })
+						: superconnectors;
+				return { ...ask, superconnectors: scs };
+			})
+		);
 
 	return {
 		subscribe,
-		resolveAsks,
+		toggleResolve,
 		addSuperconnector,
+		removeSuperconnector,
 		init,
 		update,
-		reset: () => init(initialAsks, initialSuperconnectors)
+		reset: () => init(initialAsks)
 	};
 };
 

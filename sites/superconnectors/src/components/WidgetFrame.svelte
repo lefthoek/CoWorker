@@ -6,7 +6,10 @@
 	<div class="space-y-8">
 		<slot />
 	</div>
-	<div class="mt-10 flex justify-end">
+	<div class="mt-10 flex justify-between">
+		<div>
+			<slot name="footer" />
+		</div>
 		<LefthoekLogo isInverted={true} class="w-12" />
 	</div>
 </div>
