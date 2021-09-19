@@ -4,6 +4,7 @@ import type { Ask, Contestant } from '$types/models';
 export const _gStore = () => {
 	const { subscribe, update, set } = writable([]);
 	let initialAsks: Ask[];
+
 	const init = (asks: Ask[]) => {
 		initialAsks = asks;
 		const mappedAsks = asks.map((ask: Ask) => {
@@ -19,23 +20,26 @@ export const _gStore = () => {
 			})
 		);
 
-	const addSuperconnector = ({ index, name }: { index: number; name: string }) =>
+	const addSuperconnector = ({
+		index,
+		superconnector
+	}: {
+		index: number;
+		superconnector: Contestant;
+	}) =>
 		update((asks) =>
-			asks.map((ask, i) => {
-				const scsSet = new Set(ask.superconnectors.map(({ first_name }) => first_name));
-				scsSet.add(name);
-				const superconnectors = Array.from(scsSet).map((first_name) => {
-					return {
-						first_name
-					};
-				});
-				return index === i ? { ...ask, superconnectors } : ask;
+			asks.map(({ superconnectors, ...ask }, i) => {
+				const scsSet = new Set(superconnectors);
+				return index === i
+					? { ...ask, superconnectors: Array.from(scsSet.add(superconnector)) }
+					: { ...ask, superconnectors };
 			})
 		);
 
 	const removeSuperconnector = ({ index, name }: { index: number; name: string }) =>
 		update((asks) =>
 			asks.map(({ superconnectors, ...ask }: Ask, i: number) => {
+				console.log(index, name);
 				const scs =
 					index === i
 						? superconnectors.filter(({ first_name }) => {

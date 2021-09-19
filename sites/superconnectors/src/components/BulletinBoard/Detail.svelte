@@ -1,46 +1,47 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import type { Ask } from '$types/models';
+	import type { Ask, Contestant } from '$types/models';
 	import Toggle from '$components/Toggle.svelte';
-	import Tag from '$components/Tag.svelte';
-	const dispatch = createEventDispatcher();
+	import TagGroup from '$components/TagGroup.svelte';
+	export let superconnectors: Contestant[];
 	export let ask: Ask;
 	export let askIndex: number;
-	let name: string = '';
 
+	const difference = (a: any[], b: any[] = []) => {
+		const aSet = new Set(a);
+		const bSet = new Set(b || []);
+		return [...aSet].filter((x) => !bSet.has(x));
+	};
+
+	$: selectedSuperconnectors = ask.superconnectors.map(({ first_name }) => {
+		return { label: first_name, selected: true };
+	});
+
+	$: availableSuperconnectors = difference(superconnectors, ask.superconnectors).map(
+		({ first_name }) => {
+			return { label: first_name, selected: false };
+		}
+	);
+
+	const dispatch = createEventDispatcher();
 	const toggleResolve = () => dispatch('toggleResolve', { index: askIndex });
 
-	const removeSuperconnector = ({ label }: { label: string }) =>
-		dispatch('removeSuperconnector', { name: label, index: askIndex });
-
-	const addSuperconnector = () => {
-		if (name !== '') {
-			dispatch('addSuperconnector', { index: askIndex, name });
-			name = '';
-		}
+	const handleSelect = ({ label, selected }: { label: string; selected: boolean }) => {
+		console.log(askIndex, label, selected);
+		const superconnector = superconnectors.filter(({ first_name }) => first_name === label)[0];
+		selected
+			? dispatch('removeSuperconnector', { name: label, index: askIndex })
+			: dispatch('addSuperconnector', { index: askIndex, superconnector });
 	};
 </script>
 
-<div class="font-mono font-normal text-1xl md:text-1xl space-y-5">
+<div class="font-mono font-normal text-1xl md:text-1xl space-y-6">
 	<p class="flex text-3xl align-middle md:text-4xl font-semibold">
 		{ask.team}
 		<Toggle class="ml-4" on:toggle={toggleResolve} checked={ask.resolved} />
 	</p>
-	<p class="space-x-4">
-		{#if ask.superconnectors.length}
-			{#each ask.superconnectors as { first_name }}
-				<Tag on:remove={({ detail }) => removeSuperconnector(detail)} label={first_name} />
-			{/each}
-		{:else}
-			No one yet
-		{/if}
-	</p>
-	<form on:submit|preventDefault={addSuperconnector}>
-		<input type="text" bind:value={name} />
-		<label class="flex space-x-2">
-			<button class="mt-4 text-white" type="submit">Add SuperConnector</button>
-		</label>
-	</form>
+	<TagGroup on:selectItem={({ detail }) => handleSelect(detail)} items={selectedSuperconnectors} />
+	<TagGroup on:selectItem={({ detail }) => handleSelect(detail)} items={availableSuperconnectors} />
 </div>
 
 <style>

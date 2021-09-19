@@ -9,7 +9,6 @@
 	export let askData: Ask[] = [];
 	export let mode: 'master' | 'detail' = 'master';
 	export let superconnectors: Contestant[];
-
 	let askIndex: number;
 
 	const onBack = () => {
@@ -25,7 +24,7 @@
 	const toggleResolve = (args: { index: number }) => {
 		dispatch('toggleResolve', args);
 	};
-	const addSuperconnector = (args: { index: number; name: string }) => {
+	const addSuperconnector = (args: { index: number; superconnector: Contestant }) => {
 		dispatch('addSuperconnector', args);
 	};
 
@@ -38,9 +37,9 @@
 	{#if mode === 'master'}
 		<Master on:detail={({ detail }) => onClick(detail.index)} {askData} />
 	{:else}
-		<pre class="text-background">{JSON.stringify(superconnectors, null, 2)}</pre>
 		<Detail
 			{askIndex}
+			{superconnectors}
 			ask={askData[askIndex]}
 			on:toggleResolve={({ detail }) => toggleResolve(detail)}
 			on:removeSuperconnector={({ detail }) => removeSuperconnector(detail)}

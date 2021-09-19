@@ -2,15 +2,25 @@
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 	export let label: string;
+	export let selected: boolean = false;
 
-	const remove = (args: { label: string }) => {
-		dispatch('remove', args);
+	const select = () => {
+		dispatch('select', { label, selected });
 	};
 </script>
 
-<span
-	class="border-2 border-background px-4 p-2 text-background
+{#if selected}
+	<button
+		on:click={select}
+		class="border-2 border-background px-4 p-2 bg-background text-dark
               rounded-md text-center"
-	>{label}
-	<button on:click={() => remove({ label })} class="text-background">X</button></span
->
+		>{label}
+	</button>
+{:else}
+	<button
+		on:click={select}
+		class="border-2 border-background px-4 p-2 text-background
+              rounded-md text-center"
+		>{label}
+	</button>
+{/if}
