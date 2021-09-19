@@ -34,8 +34,9 @@
 		<LeaderBoard leaderData={$leaderStore} />
 		<BulletinBoard
 			bind:mode
-			on:toggleResolve={(e) => gStore.toggleResolve(e.detail)}
-			on:addSuperconnector={(e) => gStore.addSuperconnector(e.detail)}
+			on:toggleResolve={({ detail }) => gStore.toggleResolve(detail)}
+			on:addSuperconnector={({ detail }) => gStore.addSuperconnector(detail)}
+			on:changePoints={({ detail }) => gStore.changePoints(detail)}
 			on:removeSuperconnector={(e) => gStore.removeSuperconnector(e.detail)}
 			askData={$gStore}
 			{superconnectors}

@@ -50,8 +50,31 @@ export const _gStore = () => {
 			})
 		);
 
+	const changePoints = ({
+		index,
+		action,
+		points: np
+	}: {
+		index: number;
+		action: 'increase' | 'reduce' | 'set';
+		points?: number;
+	}) => {
+		update((asks) =>
+			asks.map(({ points, ...ask }, i) => {
+				const lookup = {
+					increase: (p: number) => (p + 1 <= 99 ? p + 1 : 99),
+					set: () => (np <= 1 ? 1 : np >= 99 ? 99 : np),
+					reduce: (p: number) => (p - 1 >= 1 ? p - 1 : 1)
+				};
+				const newPoints = lookup[action](points);
+				return index === i ? { ...ask, points: newPoints } : { ...ask, points };
+			})
+		);
+	};
+
 	return {
 		subscribe,
+		changePoints,
 		toggleResolve,
 		addSuperconnector,
 		removeSuperconnector,

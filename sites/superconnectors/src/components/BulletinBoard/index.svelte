@@ -31,6 +31,9 @@
 	const removeSuperconnector = (args: { index: number; name: string }) => {
 		dispatch('removeSuperconnector', args);
 	};
+	const changePoints = (args: { action: 'increase' | 'reduce'; index: number }) => {
+		dispatch('changePoints', args);
+	};
 </script>
 
 <WidgetFrame>
@@ -42,6 +45,7 @@
 			{superconnectors}
 			ask={askData[askIndex]}
 			on:toggleResolve={({ detail }) => toggleResolve(detail)}
+			on:changePoints={({ detail }) => changePoints(detail)}
 			on:removeSuperconnector={({ detail }) => removeSuperconnector(detail)}
 			on:addSuperconnector={({ detail }) => addSuperconnector(detail)}
 			on:back={onBack}
