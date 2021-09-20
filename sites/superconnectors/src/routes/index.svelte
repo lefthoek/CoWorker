@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
-	import { gStore, leaderStore } from '../stores';
+	import gStore from '../stores/game';
+	import leaderStore from '../stores/leaders';
 
 	export const load = async ({ fetch }) => {
 		const asks_promise = fetch('/asks.json');

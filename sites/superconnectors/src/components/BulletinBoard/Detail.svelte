@@ -28,7 +28,6 @@
 	const toggleResolve = () => dispatch('toggleResolve', { index: askIndex });
 
 	const handleSelect = ({ label, selected }: { label: string; selected: boolean }) => {
-		console.log(askIndex, label, selected);
 		const superconnector = superconnectors.filter(({ first_name }) => first_name === label)[0];
 		selected
 			? dispatch('removeSuperconnector', { name: label, index: askIndex })

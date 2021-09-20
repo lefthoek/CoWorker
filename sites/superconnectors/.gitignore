@@ -1,5 +1,7 @@
 .DS_Store
 node_modules
 /build
+/public
 /.svelte-kit
-/package
+/packages
+/src/firebase-config.ts

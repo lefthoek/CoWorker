@@ -1,7 +1,7 @@
-import { writable, derived } from 'svelte/store';
+import { writable } from 'svelte/store';
 import type { Ask, Contestant } from '$types/models';
 
-export const _gStore = () => {
+export const _gameStore = () => {
 	const { subscribe, update, set } = writable([]);
 	let initialAsks: Ask[];
 
@@ -84,24 +84,6 @@ export const _gStore = () => {
 	};
 };
 
-export const gStore = _gStore();
+const gameStore = _gameStore();
 
-export const leaderStore = derived(gStore, (gameData) => {
-	const tempData: Record<string, Contestant> = gameData.reduce(
-		(acc, { superconnectors, points, resolved }) => {
-			if (resolved) {
-				for (const { first_name, contestant_id } of superconnectors) {
-					const oldScore = acc[first_name] ? acc[first_name].score : 0;
-					acc[first_name] = {
-						first_name,
-						contestant_id,
-						score: oldScore + (Math.floor(points / superconnectors.length) || 1)
-					};
-				}
-			}
-			return acc;
-		},
-		{}
-	);
-	return Object.values(tempData).sort((a, b) => b.score - a.score);
-});
+export default gameStore;
