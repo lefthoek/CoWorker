@@ -1,5 +1,5 @@
 import { derived } from 'svelte/store';
-import gameStore from './game';
+import gameStore from './gameData';
 import type { Contestant } from '$types/models';
 
 const leaderStore = derived(gameStore, (gameData) => {

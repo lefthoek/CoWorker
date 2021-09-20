@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import type { Ask, Contestant } from '$types/models';
+	import Button from '$components/Button.svelte';
 	import Detail from './Detail.svelte';
 	import Master from './Master.svelte';
-	import type { Ask, Contestant } from '$types/models';
 	import WidgetFrame from '$components/WidgetFrame.svelte';
-	const dispatch = createEventDispatcher();
 
 	export let askData: Ask[] = [];
 	export let mode: 'master' | 'detail' = 'master';
@@ -20,20 +19,6 @@
 		mode = 'detail';
 		askIndex = index;
 	};
-
-	const toggleResolve = (args: { index: number }) => {
-		dispatch('toggleResolve', args);
-	};
-	const addSuperconnector = (args: { index: number; superconnector: Contestant }) => {
-		dispatch('addSuperconnector', args);
-	};
-
-	const removeSuperconnector = (args: { index: number; name: string }) => {
-		dispatch('removeSuperconnector', args);
-	};
-	const changePoints = (args: { action: 'increase' | 'reduce'; index: number }) => {
-		dispatch('changePoints', args);
-	};
 </script>
 
 <WidgetFrame>
@@ -44,21 +29,17 @@
 			{askIndex}
 			{superconnectors}
 			ask={askData[askIndex]}
-			on:toggleResolve={({ detail }) => toggleResolve(detail)}
-			on:changePoints={({ detail }) => changePoints(detail)}
-			on:removeSuperconnector={({ detail }) => removeSuperconnector(detail)}
-			on:addSuperconnector={({ detail }) => addSuperconnector(detail)}
-			on:back={onBack}
+			on:toggleResolve
+			on:changePoints
+			on:removeSuperconnector
+			on:addSuperconnector
+			on:back
 		/>
 	{/if}
 
 	<div slot="footer">
 		{#if mode === 'detail'}
-			<button
-				class="border-2 border-background px-4 p-2 text-background
-              rounded-md text-center"
-				on:click={onBack}>Go Back</button
-			>
+			<Button on:click={onBack}>Go Back</Button>
 		{/if}
 	</div>
 </WidgetFrame>

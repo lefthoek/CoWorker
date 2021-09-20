@@ -1,9 +1,6 @@
 import preprocess from 'svelte-preprocess';
 import { resolve } from 'path';
-import fs from 'fs';
 import adapter from '@sveltejs/adapter-static';
-
-const firebase = JSON.parse(fs.readFileSync('node_modules/firebase/package.json', 'utf8'));
 
 const mode = process.env.NODE_ENV;
 const dev = mode === 'development';
@@ -28,9 +25,6 @@ const config = {
 		}),
 		target: '#svelte',
 		vite: {
-			define: {
-				FIREBASE_SDK_VERSION: JSON.stringify(firebase.version)
-			},
 			resolve: {
 				alias: {
 					$components: resolve('./src/components'),
