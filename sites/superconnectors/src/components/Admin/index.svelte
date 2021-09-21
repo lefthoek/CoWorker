@@ -2,9 +2,10 @@
 	import type { Ask, Contestant } from '$types/models';
 	import Button from '$components/Button.svelte';
 	import Detail from './Detail.svelte';
-	import Master from './Master.svelte';
+	import BulletinBoard from '../BulletinBoard.svelte';
 	import WidgetFrame from '$components/WidgetFrame.svelte';
 
+	export let fullscreen = false;
 	export let askData: Ask[] = [];
 	export let mode: 'master' | 'detail' = 'master';
 	export let superconnectors: Contestant[];
@@ -21,10 +22,10 @@
 	};
 </script>
 
-<WidgetFrame>
-	{#if mode === 'master'}
-		<Master on:detail={({ detail }) => onClick(detail.index)} {askData} />
-	{:else}
+{#if mode === 'master'}
+	<BulletinBoard {fullscreen} on:detail={({ detail }) => onClick(detail.index)} {askData} />
+{:else}
+	<WidgetFrame {fullscreen}>
 		<Detail
 			{askIndex}
 			{superconnectors}
@@ -35,11 +36,11 @@
 			on:addSuperconnector
 			on:back
 		/>
-	{/if}
 
-	<div slot="footer">
-		{#if mode === 'detail'}
-			<Button on:click={onBack}>Go Back</Button>
-		{/if}
-	</div>
-</WidgetFrame>
+		<div slot="footer">
+			{#if mode === 'detail'}
+				<Button on:click={onBack}>Go Back</Button>
+			{/if}
+		</div>
+	</WidgetFrame>
+{/if}

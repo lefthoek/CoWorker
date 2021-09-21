@@ -1,9 +1,17 @@
 <script lang="ts">
 	import LefthoekLogo from '$components/LefthoekLogo.svelte';
+	import SuperConnectorsLogo from '$components/SuperConnectorsLogo.svelte';
+	export let fullscreen = false;
 </script>
 
-<div class="bg-dark h-full md:h-auto pt-16 p-8 md:rounded-md">
-	<div class="space-y-8">
+<div
+	class:md:rounded-md={!fullscreen}
+	class="bg-dark w-full h-full p-8 md:p-16 flex flex-col justify-between"
+>
+	<div class="w-full md:w-1/6 mb-8">
+		<SuperConnectorsLogo />
+	</div>
+	<div class="space-y-8 md:p-32 h-3/4 border rounded-lg border-background">
 		<slot />
 	</div>
 	<div class="mt-10 flex justify-between">

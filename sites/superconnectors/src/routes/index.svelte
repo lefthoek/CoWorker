@@ -1,74 +1,14 @@
-<script context="module" lang="ts">
-	import gStore from '../stores/game';
-	import leaderStore from '../stores/leaders';
-	export const load = async ({ fetch }) => {
-		const asks_promise = fetch('/asks.json');
-		const sc_promise = fetch('/superconnectors.json');
-		const [asks_res, sc_res] = await Promise.all([asks_promise, sc_promise]);
-		const [askData, superconnectors]: [Ask[], Contestant[]] = await Promise.all([
-			asks_res.json(),
-			sc_res.json()
-		]);
-		return { props: { superconnectors, askData } };
-	};
-</script>
-
 <script lang="ts">
-	import type { Ask, Contestant } from '$types/models';
-	import Auth from '$components/Auth.svelte';
-	import BulletinBoard from '$components/BulletinBoard/index.svelte';
-	import Button from '$components/Button.svelte';
-	import LeaderBoard from '$components/LeaderBoard.svelte';
-	import authStore from '$stores/auth';
-	import { db } from '../firebase';
-	import { doc, setDoc } from 'firebase/firestore';
-
-	export let askData: Ask[];
-	export let superconnectors: Contestant[];
-	let mode: 'master' | 'detail' = 'master';
-
-	if (db) {
-		gStore.subscribe((asks) => {
-			for (const ask of asks) {
-				console.log(ask);
-				setDoc(doc(db, 'aks', ask.team), ask);
-			}
-		});
-	}
-
-	const startGame = () => {
-		gStore.init(askData);
-	};
-
-	const resetGame = () => {
-		gStore.reset();
-		mode = 'master';
-	};
+	import SuperConnectorsLogo from '$components/SuperConnectorsLogo.svelte';
 </script>
 
-<main class="md:p-8 md:pt-16 md:p-16 flex h-full flex-col justify-between">
-	<div class="w-full h-full space-y-8 max-w-4xl mx-auto">
-		<LeaderBoard leaderData={$leaderStore} />
-		{#if $authStore}
-			<BulletinBoard
-				bind:mode
-				on:toggleResolve={({ detail }) => gStore.toggleResolve(detail)}
-				on:addSuperconnector={({ detail }) => gStore.addSuperconnector(detail)}
-				on:changePoints={({ detail }) => gStore.changePoints(detail)}
-				on:removeSuperconnector={(e) => gStore.removeSuperconnector(e.detail)}
-				askData={$gStore}
-				{superconnectors}
-			/>
-		{/if}
-		<div class="flex justify-between">
-			<Auth />
-			{#if $authStore}
-				{#if $gStore.length === 0}
-					<Button on:click={startGame}>Start Game</Button>
-				{:else if $leaderStore.length > 0}
-					<Button on:click={resetGame}>Reset Game</Button>
-				{/if}
-			{/if}
-		</div>
+<main class="p-8 py-16 md:p-16 flex h-full flex-col justify-between">
+	<div class="w-full md:w-1/3">
+		<SuperConnectorsLogo />
+	</div>
+	<div class="flex flex-col">
+		<a href="/leaderboard">Leader Board</a>
+		<a href="/bulletinboard">Bulletin Board</a>
+		<a href="/admin">Admin</a>
 	</div>
 </main>

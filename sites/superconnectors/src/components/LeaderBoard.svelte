@@ -2,10 +2,11 @@
 	import type { Contestant } from '$types/models';
 	import { fly, fade } from 'svelte/transition';
 	export let leaderData: Contestant[] = [];
+	export let fullscreen = false;
 	import WidgetFrame from '$components/WidgetFrame.svelte';
 </script>
 
-<WidgetFrame>
+<WidgetFrame {fullscreen}>
 	{#if !leaderData.length}
 		<div
 			transition:fade
