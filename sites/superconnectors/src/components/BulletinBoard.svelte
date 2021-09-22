@@ -18,8 +18,8 @@
 			on:click={() => onClick(index)}
 			class:resolved
 			transition:fade
-			class="font-mono font-normal text-1xl md:text-2xl grid pb-1 grid-cols-10
-      border-b border-black"
+			class="font-mono font-normal text-1xl md:text-2xl grid pb-2 grid-cols-10
+      p-3 border-b border-background"
 		>
 			<p class="col-span-4">
 				{team}
@@ -39,6 +39,8 @@
 	p {
 		color: var(--brightGreen);
 		user-select: none;
+		font-size: 1.3rem;
+		line-height: 1.7rem;
 	}
 	.resolved {
 		opacity: 0.1;

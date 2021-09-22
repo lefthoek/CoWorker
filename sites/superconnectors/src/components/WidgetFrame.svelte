@@ -12,7 +12,7 @@
 		<SuperConnectorsLogo />
 	</a>
 	<div
-		class="space-y-8 md:py-8 px-8 h-3/4 border rounded-lg border-background
+		class="space-y-3 md:py-8 px-8 h-3/4 border rounded-lg border-background
     overflow-y-scroll"
 	>
 		<slot />
