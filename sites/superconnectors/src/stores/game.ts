@@ -1,10 +1,8 @@
 import { writable } from 'svelte/store';
 import type { Ask, Contestant } from '$types/models';
 import { db } from '../firebase';
-import * as firestore from '@firebase/firestore';
+import { doc, setDoc, updateDoc, increment } from '@firebase/firestore';
 import gStore from '$stores/gameData';
-
-const { doc, setDoc, updateDoc, increment } = firestore;
 
 export const _gameStore = () => {
 	const { update } = writable([]);

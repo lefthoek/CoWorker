@@ -1,5 +1,5 @@
 import { db } from '../firebase';
-import { collection, query, onSnapshot } from 'firebase/firestore';
+import { collection, query, onSnapshot } from '@firebase/firestore';
 import { readable } from 'svelte/store';
 
 export const gameStore = readable([], function start(set) {

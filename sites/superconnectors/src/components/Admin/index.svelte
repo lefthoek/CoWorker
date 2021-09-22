@@ -3,7 +3,7 @@
 	import type { Ask, Contestant } from '$types/models';
 	import Button from '$components/Button.svelte';
 	import Detail from './Detail.svelte';
-	import BulletinBoard from '../BulletinBoard.svelte';
+	import BulletinBoard from '$components/BulletinBoard.svelte';
 	import WidgetFrame from '$components/WidgetFrame.svelte';
 
 	const dispatch = createEventDispatcher();
