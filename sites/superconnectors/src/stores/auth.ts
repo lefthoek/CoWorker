@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import { auth } from '../firebase';
-import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut } from '@firebase/auth';
 
 const authStore = () => {
 	const { subscribe, set } = writable(null);

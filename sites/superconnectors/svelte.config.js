@@ -27,6 +27,7 @@ const config = {
 		vite: {
 			resolve: {
 				alias: {
+					tslib: 'tslib/tslib.es6.js',
 					$components: resolve('./src/components'),
 					$types: resolve('./src/types'),
 					$stores: resolve('./src/stores')
