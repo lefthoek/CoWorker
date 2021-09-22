@@ -6,15 +6,11 @@
 		dispatch('changePoints', { action: 'set', points });
 	};
 	const increasePoints = () => {
-		if (points < 99) {
-			dispatch('changePoints', { action: 'increase' });
-		}
+		dispatch('changePoints', { action: 'increase' });
 	};
 
 	const reducePoints = () => {
-		if (points > 1) {
-			dispatch('changePoints', { action: 'reduce' });
-		}
+		dispatch('changePoints', { action: 'reduce' });
 	};
 </script>
 

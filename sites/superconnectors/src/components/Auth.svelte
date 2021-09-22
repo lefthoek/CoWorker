@@ -3,7 +3,7 @@
 	import Button from '$components/Button.svelte';
 	let email: string;
 	let password: string;
-	let showForm = false;
+	let showForm = true;
 
 	const login = () => {
 		authStore.login({ email, password });
@@ -14,12 +14,25 @@
 {#if $authStore}
 	<Button on:click={authStore.logout}>Logout</Button>
 {:else if showForm}
-	<form class="space-x-4" on:submit|preventDefault={login}>
-		<Button on:click={() => (showForm = false)}>Cancel</Button>
-		<input class="p-2" type="email" bind:value={email} placeholder="email" />
-		<input class="p-2" type="password" bind:value={password} placeholder="password" />
+	<form class="flex flex-col h-full space-y-4 justify-center" on:submit|preventDefault={login}>
+		<input
+			class="bg-dark border border-background p-3 rounded-md text-background"
+			type="email"
+			bind:value={email}
+			placeholder="email"
+		/>
+		<input
+			class="bg-dark border border-background p-3 text-background rounded-md"
+			type="password"
+			bind:value={password}
+			placeholder="password"
+		/>
 		<Button type="submit">Login</Button>
 	</form>
-{:else}
-	<Button on:click={() => (showForm = true)}>Login</Button>
 {/if}
+
+<style>
+	input {
+		color: var(--brightGreen);
+	}
+</style>

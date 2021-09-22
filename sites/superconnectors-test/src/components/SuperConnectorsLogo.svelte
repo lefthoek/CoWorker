@@ -1,4 +1,9 @@
 <svg viewBox="0 0 1031.5 243.25" xml:space="preserve">
+	<style type="text/css">
+		.st0 {
+			fill: #5aff9d;
+		}
+	</style>
 	<g>
 		<g>
 			<path
@@ -128,12 +133,3 @@
 		</g>
 	</g>
 </svg>
-
-<style>
-	.st0 {
-		fill: var(--cipria);
-	}
-	svg:hover .st0 {
-		fill: var(--brightGreen);
-	}
-</style>

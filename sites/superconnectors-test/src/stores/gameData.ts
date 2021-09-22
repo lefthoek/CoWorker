@@ -5,7 +5,7 @@ import { readable } from 'svelte/store';
 export const gameStore = readable([], function start(set) {
 	let unsubscribe = () => null;
 	if (db) {
-		const q = query(collection(db, 'asks'));
+		const q = query(collection(db, 'aks'));
 		unsubscribe = onSnapshot(q, (snapshot) => {
 			let asks = [];
 

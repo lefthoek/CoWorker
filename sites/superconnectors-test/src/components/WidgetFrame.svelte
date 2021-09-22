@@ -8,13 +8,10 @@
 	class:md:rounded-md={!fullscreen}
 	class="bg-dark w-full h-full p-8 md:p-16 flex flex-col justify-between"
 >
-	<a href="/" class="w-full md:w-1/6 mb-8">
+	<div class="w-full md:w-1/6 mb-8">
 		<SuperConnectorsLogo />
-	</a>
-	<div
-		class="space-y-8 md:py-8 px-32 h-3/4 border rounded-lg border-background
-    overflow-y-scroll"
-	>
+	</div>
+	<div class="space-y-8 md:p-32 h-3/4 border rounded-lg border-background">
 		<slot />
 	</div>
 	<div class="mt-10 flex justify-between">
@@ -24,9 +21,3 @@
 		<LefthoekLogo isInverted={true} class="w-12" />
 	</div>
 </div>
-
-<style>
-	div {
-		background-color: var(--midnight);
-	}
-</style>

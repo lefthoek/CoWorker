@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { Ask } from '$types/models';
+	import WidgetFrame from '$components/WidgetFrame.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import WidgetFrame from '$components/WidgetFrame.svelte';
+	import type { Ask } from '$types/models';
 	export let askData: Ask[] = [];
 	export let fullscreen = false;
 	const dispatch = createEventDispatcher();
@@ -31,7 +31,6 @@
 			</p>
 		</div>
 	{/each}
-	<slot name="footer" slot="footer" />
 </WidgetFrame>
 
 <style>

@@ -1,5 +1,12 @@
-<script>
-	export let type = 'button';
+<script lang="ts">
+	export let type: 'button' | 'submit' = 'button';
 </script>
 
-<button {type} class="font-mono font-semibold bg-red-200 p-4" on:click><slot /></button>
+<button
+	{type}
+	on:click
+	class="border border-background px-4 p-2 hover:bg-background hover:text-dark text-background
+              rounded-md text-center"
+>
+	<slot />
+</button>

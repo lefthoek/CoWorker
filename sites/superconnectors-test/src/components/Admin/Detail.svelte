@@ -6,6 +6,7 @@
 	import TagGroup from '$components/TagGroup.svelte';
 	export let superconnectors: Contestant[];
 	export let ask: Ask;
+	export let askIndex: number;
 
 	const difference = (a: any[], b: any[] = []) => {
 		const aSet = new Set(a);
@@ -24,13 +25,13 @@
 	);
 
 	const dispatch = createEventDispatcher();
-	const toggleResolve = () => dispatch('toggleResolve', ask);
+	const toggleResolve = () => dispatch('toggleResolve', { index: askIndex });
 
 	const handleSelect = ({ label, selected }: { label: string; selected: boolean }) => {
 		const superconnector = superconnectors.filter(({ first_name }) => first_name === label)[0];
 		selected
-			? dispatch('removeSuperconnector', { ask, superconnector })
-			: dispatch('addSuperconnector', { ask, superconnector });
+			? dispatch('removeSuperconnector', { name: label, index: askIndex })
+			: dispatch('addSuperconnector', { index: askIndex, superconnector });
 	};
 
 	const changePoints = ({
@@ -40,7 +41,7 @@
 		action: 'increase' | 'reduce' | 'set';
 		points: number;
 	}) => {
-		dispatch('changePoints', { action, points, ask });
+		dispatch('changePoints', { action, points, index: askIndex });
 	};
 </script>
 

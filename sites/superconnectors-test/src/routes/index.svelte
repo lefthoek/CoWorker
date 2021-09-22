@@ -12,9 +12,3 @@
 		<a href="/admin">Admin</a>
 	</div>
 </main>
-
-<style>
-	main {
-    background-color: var(--skyBlue);
-	}
-</style>

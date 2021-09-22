@@ -1,86 +1,97 @@
 import { writable } from 'svelte/store';
 import type { Ask, Contestant } from '$types/models';
+import { db } from '../firebase';
+import { doc, setDoc, updateDoc, increment } from 'firebase/firestore';
+import gStore from '$stores/gameData';
 
 export const _gameStore = () => {
-	const { subscribe, update, set } = writable([]);
-	let initialAsks: Ask[];
+	const { update } = writable([]);
+
+	const createRef = ({ team }: Ask) => doc(db, 'asks', team);
+
+	const set = (asks: Ask[]) => {
+		for (const ask of asks) {
+			setDoc(doc(db, 'asks', ask.team), ask);
+		}
+	};
 
 	const init = (asks: Ask[]) => {
-		initialAsks = asks;
 		const mappedAsks = asks.map((ask: Ask) => {
 			return { ...ask, superconnectors: [], resolved: false };
 		});
 		set(mappedAsks);
 	};
 
-	const toggleResolve = ({ index }: { index: number }) =>
-		update((asks) =>
-			asks.map((ask, i) => {
-				return index === i ? { ...ask, resolved: !ask.resolved } : ask;
-			})
-		);
+	const toggleResolve = (ask: Ask) => {
+		updateDoc(createRef(ask), {
+			resolved: !ask.resolved
+		});
+	};
 
-	const addSuperconnector = ({
-		index,
+	const addSuperconnector = ({ ask, superconnector }: { ask: Ask; superconnector: Contestant }) => {
+		const scsSet = new Set(ask.superconnectors);
+		updateDoc(createRef(ask), {
+			...ask,
+			superconnectors: Array.from(scsSet.add(superconnector))
+		});
+	};
+
+	const removeSuperconnector = ({
+		ask,
 		superconnector
 	}: {
-		index: number;
+		ask: Ask;
 		superconnector: Contestant;
-	}) =>
-		update((asks) =>
-			asks.map(({ superconnectors, ...ask }, i) => {
-				const scsSet = new Set(superconnectors);
-				return index === i
-					? { ...ask, superconnectors: Array.from(scsSet.add(superconnector)) }
-					: { ...ask, superconnectors };
-			})
+	}) => {
+		const scs = ask.superconnectors.filter(
+			({ first_name }) => superconnector.first_name !== first_name
 		);
-
-	const removeSuperconnector = ({ index, name }: { index: number; name: string }) =>
-		update((asks) =>
-			asks.map(({ superconnectors, ...ask }: Ask, i: number) => {
-				console.log(index, name);
-				const scs =
-					index === i
-						? superconnectors.filter(({ first_name }) => {
-								return name !== first_name;
-						  })
-						: superconnectors;
-				return { ...ask, superconnectors: scs };
-			})
-		);
+		updateDoc(createRef(ask), {
+			...ask,
+			superconnectors: scs
+		});
+	};
 
 	const changePoints = ({
-		index,
+		ask,
 		action,
 		points: np
 	}: {
-		index: number;
+		ask: Ask;
 		action: 'increase' | 'reduce' | 'set';
 		points?: number;
 	}) => {
-		update((asks) =>
-			asks.map(({ points, ...ask }, i) => {
-				const lookup = {
-					increase: (p: number) => (p + 1 <= 99 ? p + 1 : 99),
-					set: () => (np <= 1 ? 1 : np >= 99 ? 99 : np),
-					reduce: (p: number) => (p - 1 >= 1 ? p - 1 : 1)
-				};
-				const newPoints = lookup[action](points);
-				return index === i ? { ...ask, points: newPoints } : { ...ask, points };
-			})
-		);
+		const points = np <= 1 ? 1 : np >= 99 ? 99 : np;
+		switch (action) {
+			case 'reduce': {
+				return updateDoc(createRef(ask), {
+					...ask,
+					points: increment(-1)
+				});
+			}
+			case 'increase': {
+				return updateDoc(createRef(ask), {
+					...ask,
+					points: increment(1)
+				});
+			}
+			case 'set': {
+				return updateDoc(createRef(ask), {
+					...ask,
+					points
+				});
+			}
+		}
 	};
 
 	return {
-		subscribe,
+		subscribe: gStore.subscribe,
 		changePoints,
 		toggleResolve,
 		addSuperconnector,
 		removeSuperconnector,
 		init,
-		update,
-		reset: () => init(initialAsks)
+		update
 	};
 };
 
