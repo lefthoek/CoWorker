@@ -41,7 +41,6 @@
 {:else}
 	<WidgetFrame {fullscreen}>
 		<Detail
-			{askIndex}
 			{superconnectors}
 			ask={askData[askIndex]}
 			on:toggleResolve
