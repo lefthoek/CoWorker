@@ -18,7 +18,7 @@
 	{#each leaderData as { first_name, last_name, score }, index}
 		<div
 			transition:fade
-			class="text-background font-mono font-normal text-2xl gap-x-1 md:text-3xl grid grid-cols-10"
+			class="text-background font-mono font-normal md:px-16 text-2xl gap-x-1 md:text-3xl grid grid-cols-10"
 		>
 			<p transition:fly={{ y: 100 }} class="col-span-1 font-semibold">
 				{index + 1}
