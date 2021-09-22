@@ -19,7 +19,7 @@
 			class:resolved
 			transition:fade
 			class="font-mono font-normal text-1xl md:text-2xl grid pb-2 grid-cols-10
-      p-3 border-b border-background"
+      py-2 border-b border-background"
 		>
 			<p class="col-span-4">
 				{team}

@@ -17,7 +17,7 @@ export const _gameStore = () => {
 
 	const init = (asks: Ask[]) => {
 		const mappedAsks = asks.map((ask: Ask) => {
-			return { ...ask, superconnectors: [], resolved: false };
+			return { ...ask, superconnectors: [], points: 0, resolved: false };
 		});
 		set(mappedAsks);
 	};
@@ -30,9 +30,11 @@ export const _gameStore = () => {
 
 	const addSuperconnector = ({ ask, superconnector }: { ask: Ask; superconnector: Contestant }) => {
 		const scsSet = new Set(ask.superconnectors);
+		const superconnectors = Array.from(scsSet.add(superconnector));
 		updateDoc(createRef(ask), {
 			...ask,
-			superconnectors: Array.from(scsSet.add(superconnector))
+			superconnectors,
+			points: superconnectors.length ? superconnectors.length * 10 : 0
 		});
 	};
 
@@ -43,50 +45,18 @@ export const _gameStore = () => {
 		ask: Ask;
 		superconnector: Contestant;
 	}) => {
-		const scs = ask.superconnectors.filter(
+		const superconnectors = ask.superconnectors.filter(
 			({ first_name }) => superconnector.first_name !== first_name
 		);
 		updateDoc(createRef(ask), {
 			...ask,
-			superconnectors: scs
+			superconnectors,
+			points: superconnectors.length ? superconnectors.length * 10 : 0
 		});
-	};
-
-	const changePoints = ({
-		ask,
-		action,
-		points: np
-	}: {
-		ask: Ask;
-		action: 'increase' | 'reduce' | 'set';
-		points?: number;
-	}) => {
-		const points = np <= 1 ? 1 : np >= 99 ? 99 : np;
-		switch (action) {
-			case 'reduce': {
-				return updateDoc(createRef(ask), {
-					...ask,
-					points: increment(-1)
-				});
-			}
-			case 'increase': {
-				return updateDoc(createRef(ask), {
-					...ask,
-					points: increment(1)
-				});
-			}
-			case 'set': {
-				return updateDoc(createRef(ask), {
-					...ask,
-					points
-				});
-			}
-		}
 	};
 
 	return {
 		subscribe: gStore.subscribe,
-		changePoints,
 		toggleResolve,
 		addSuperconnector,
 		removeSuperconnector,
