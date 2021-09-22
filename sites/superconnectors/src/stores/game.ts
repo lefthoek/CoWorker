@@ -46,7 +46,7 @@ export const _gameStore = () => {
 		superconnector: Contestant;
 	}) => {
 		const superconnectors = ask.superconnectors.filter(
-			({ first_name }) => superconnector.first_name !== first_name
+			({ contestant_id }) => superconnector.contestant_id !== contestant_id
 		);
 		updateDoc(createRef(ask), {
 			...ask,

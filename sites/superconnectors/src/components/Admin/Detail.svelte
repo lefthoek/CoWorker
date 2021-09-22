@@ -8,26 +8,26 @@
 	export let ask: Ask;
 
 	const difference = (a: any[], b: any[] = []) => {
-		const aSet = new Set(a);
-		const bSet = new Set(b || []);
-		return [...aSet].filter((x) => !bSet.has(x));
+		return a.filter(
+			({ contestant_id }) => !b.find(({ contestant_id: id }) => contestant_id === id)
+		);
 	};
 
-	$: selectedSuperconnectors = ask.superconnectors.map(({ first_name }) => {
-		return { label: first_name, selected: true };
+	$: selectedSuperconnectors = ask.superconnectors.map(({ first_name, contestant_id }) => {
+		return { label: first_name, selected: true, id: contestant_id };
 	});
 
 	$: availableSuperconnectors = difference(superconnectors, ask.superconnectors).map(
-		({ first_name }) => {
-			return { label: first_name, selected: false };
+		({ first_name, contestant_id }) => {
+			return { label: first_name, selected: false, id: contestant_id };
 		}
 	);
 
 	const dispatch = createEventDispatcher();
 	const toggleResolve = () => dispatch('toggleResolve', ask);
 
-	const handleSelect = ({ label, selected }: { label: string; selected: boolean }) => {
-		const superconnector = superconnectors.filter(({ first_name }) => first_name === label)[0];
+	const handleSelect = ({ id, selected }: { id: number; selected: boolean }) => {
+		const superconnector = superconnectors.filter(({ contestant_id }) => contestant_id === id)[0];
 		selected
 			? dispatch('removeSuperconnector', { ask, superconnector })
 			: dispatch('addSuperconnector', { ask, superconnector });

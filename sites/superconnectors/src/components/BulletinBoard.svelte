@@ -37,12 +37,12 @@
 
 <style>
 	p {
-		color: var(--brightGreen);
+		color: var(--cipria);
 		user-select: none;
 		font-size: 1.3rem;
 		line-height: 1.7rem;
 	}
-	.resolved {
-		opacity: 0.1;
+	.resolved p {
+		color: var(--brightGreen);
 	}
 </style>

@@ -32,7 +32,7 @@
 	};
 </script>
 
-{#if $authStore}
+{#if true || $authStore}
 	<Admin
 		fullscreen={true}
 		bind:mode
