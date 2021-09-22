@@ -18,7 +18,8 @@
 			on:click={() => onClick(index)}
 			class:resolved
 			transition:fade
-			class="font-mono font-normal text-1xl md:text-2xl grid grid-cols-10"
+			class="font-mono font-normal text-1xl md:text-2xl grid pb-1 grid-cols-10
+      border-b border-black"
 		>
 			<p class="col-span-4">
 				{team}
