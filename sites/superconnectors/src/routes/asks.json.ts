@@ -2,7 +2,7 @@ export const get = () => {
 	return {
 		body: [
 			{ team: 'SHRLQ', summary: 'Secure Sensitive Communications Pilots', points: 85 },
-			{ team: 'Health-Things', summary: 'Speed Up Sales Process', points: 20 },
+			{ team: 'Health-Thing', summary: 'Speed Up Sales Process', points: 20 },
 			{ team: 'College Life', summary: 'Target Leading Firm at Scale ', points: 62 },
 			{ team: 'The Selection Lab', summary: 'Connections Sales Talent', points: 33 },
 			{ team: 'Biond Solutions', summary: 'Introductions European Stakeholders', points: 31 },
