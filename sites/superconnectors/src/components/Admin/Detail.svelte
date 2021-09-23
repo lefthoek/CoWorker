@@ -40,6 +40,7 @@
 		action: 'increase' | 'reduce' | 'set';
 		points: number;
 	}) => {
+		console.log(action);
 		dispatch('changePoints', { action, points, ask });
 	};
 </script>

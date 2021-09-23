@@ -17,7 +17,7 @@ export const _gameStore = () => {
 
 	const init = (asks: Ask[]) => {
 		const mappedAsks = asks.map((ask: Ask) => {
-			return { ...ask, superconnectors: [], points: 0, resolved: false };
+			return { ...ask, superconnectors: [], resolved: false };
 		});
 		set(mappedAsks);
 	};
@@ -33,8 +33,7 @@ export const _gameStore = () => {
 		const superconnectors = Array.from(scsSet.add(superconnector));
 		updateDoc(createRef(ask), {
 			...ask,
-			superconnectors,
-			points: superconnectors.length ? superconnectors.length * 10 : 0
+			superconnectors
 		});
 	};
 
@@ -50,14 +49,45 @@ export const _gameStore = () => {
 		);
 		updateDoc(createRef(ask), {
 			...ask,
-			superconnectors,
-			points: superconnectors.length ? superconnectors.length * 10 : 0
+			superconnectors
 		});
 	};
 
+	const changePoints = ({
+		ask,
+		action,
+		points: np
+	}: {
+		ask: Ask;
+		action: 'increase' | 'reduce' | 'set';
+		points?: number;
+	}) => {
+		const points = np <= 1 ? 1 : np >= 99 ? 99 : np;
+		switch (action) {
+			case 'reduce': {
+				return updateDoc(createRef(ask), {
+					...ask,
+					points: increment(-1)
+				});
+			}
+			case 'increase': {
+				return updateDoc(createRef(ask), {
+					...ask,
+					points: increment(1)
+				});
+			}
+			case 'set': {
+				return updateDoc(createRef(ask), {
+					...ask,
+					points
+				});
+			}
+		}
+	};
 	return {
 		subscribe: gStore.subscribe,
 		toggleResolve,
+		changePoints,
 		addSuperconnector,
 		removeSuperconnector,
 		init,

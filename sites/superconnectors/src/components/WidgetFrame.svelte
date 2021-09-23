@@ -11,16 +11,15 @@
 	<a href="/" class="w-full md:w-1/6 mb-8">
 		<SuperConnectorsLogo />
 	</a>
+	<slot name="header" />
 	<div
 		class="space-y-3 md:py-8 px-8 h-3/4 border rounded-lg border-background
     overflow-y-scroll"
 	>
 		<slot />
 	</div>
-	<div class="mt-10 flex justify-between">
-		<div>
-			<slot name="footer" />
-		</div>
+	<div class="mt-10 flex justify-between px-1 items-center">
+		<slot name="footer" />
 		<LefthoekLogo isInverted={true} class="w-12" />
 	</div>
 </div>

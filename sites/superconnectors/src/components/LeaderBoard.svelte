@@ -33,6 +33,7 @@
 			</p>
 		</div>
 	{/each}
+	<slot name="footer" slot="footer" />
 </WidgetFrame>
 
 <style>
