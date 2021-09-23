@@ -1,14 +1,28 @@
 import { readable, writable } from 'svelte/store';
 export const _countdown = () => {
 	const { subscribe, set } = writable(0);
-	const currentTime = Number(new Date());
-	const deadline = Number(new Date(currentTime + 7 * 60 * 1000));
-	setInterval(function () {
-		const now = new Date().getTime();
-		const distance: number = deadline - now;
-		set(distance);
-	});
-	return { subscribe };
+	let interval: any;
+
+	const start = () => {
+		const currentTime = Number(new Date());
+		const deadline = Number(new Date(currentTime + 7 * 60 * 1000));
+		setInterval(() => {
+			set(deadline);
+		}, 1000);
+	};
+
+	const reset = () => {
+		if (interval) {
+			unsubscribe();
+		}
+		interval = start();
+	};
+
+	const unsubscribe = () => {
+		clearInterval(interval);
+	};
+
+	return { subscribe, unsubscribe, reset };
 };
 
 export const countdown = _countdown();

@@ -7,6 +7,7 @@
 </script>
 
 <WidgetFrame {fullscreen}>
+	<slot name="header" slot="header" />
 	{#if !leaderData.length}
 		<div
 			transition:fade
