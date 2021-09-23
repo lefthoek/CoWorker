@@ -16,7 +16,7 @@
 <div
 	class:critical
 	class="text-background font-mono font-semibold
-  text-5xl"
+  text-6xl"
 >
 	{#if $countdown}
 		{formatted}
