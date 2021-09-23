@@ -4,6 +4,7 @@ export const _countdown = () => {
 	let interval: any;
 
 	const start = () => {
+		stop();
 		const currentTime = Number(new Date());
 		const deadline = Number(new Date(currentTime + 7 * 60 * 1000));
 
