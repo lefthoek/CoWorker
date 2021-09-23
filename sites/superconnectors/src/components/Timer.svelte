@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { countdown } from '$stores/time';
 
-	$: critical = $countdown < 410000;
+	$: critical = $countdown ? $countdown < 180000 : false;
 
 	function formatTime(ms: number) {
-		const seconds = Math.ceil(ms / 1000);
-		return seconds;
+		const time = ms / 1000;
+		var minutes = Math.floor(time / 60);
+		var seconds = Math.ceil(time - minutes * 60);
+		return `${minutes}:${seconds}`;
 	}
 
 	$: formatted = formatTime($countdown);
@@ -16,7 +18,9 @@
 	class="text-background font-mono font-semibold
   text-5xl"
 >
-	{formatted}
+	{#if $countdown}
+		{formatted}
+	{/if}
 </div>
 
 <style>

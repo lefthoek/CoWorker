@@ -27,6 +27,11 @@ export const _gameStore = () => {
 			resolved: !ask.resolved
 		});
 	};
+	const changeSummary = ({ ask }: { ask: Ask }) => {
+		updateDoc(createRef(ask), {
+			summary: ask.summary
+		});
+	};
 
 	const addSuperconnector = ({ ask, superconnector }: { ask: Ask; superconnector: Contestant }) => {
 		const scsSet = new Set(ask.superconnectors);
@@ -88,6 +93,7 @@ export const _gameStore = () => {
 		subscribe: gStore.subscribe,
 		toggleResolve,
 		changePoints,
+		changeSummary,
 		addSuperconnector,
 		removeSuperconnector,
 		init,

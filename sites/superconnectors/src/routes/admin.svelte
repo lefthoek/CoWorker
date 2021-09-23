@@ -41,7 +41,8 @@
 		on:toggleResolve={({ detail }) => gStore.toggleResolve(detail)}
 		on:addSuperconnector={({ detail }) => gStore.addSuperconnector(detail)}
 		on:changePoints={({ detail }) => gStore.changePoints(detail)}
-		on:removeSuperconnector={(e) => gStore.removeSuperconnector(e.detail)}
+		on:changeSummary={({ detail }) => gStore.changeSummary(detail)}
+		on:removeSuperconnector={({ detail }) => gStore.removeSuperconnector(detail)}
 		askData={$gStore}
 		{superconnectors}
 	/>

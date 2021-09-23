@@ -5,5 +5,5 @@
 </script>
 
 <LeaderBoard fullscreen={true} leaderData={$leaderStore}>
-	<Timer minutes={7} slot="footer" />
+	<Timer slot="footer" />
 </LeaderBoard>

@@ -45,6 +45,7 @@
 			ask={askData[askIndex]}
 			on:toggleResolve
 			on:changePoints
+			on:changeSummary
 			on:removeSuperconnector
 			on:addSuperconnector
 			on:back

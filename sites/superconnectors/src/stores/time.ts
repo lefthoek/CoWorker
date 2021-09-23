@@ -20,6 +20,7 @@ export const _countdown = () => {
 	const stop = () => {
 		if (interval) {
 			clearInterval(interval);
+			set(null);
 		}
 	};
 

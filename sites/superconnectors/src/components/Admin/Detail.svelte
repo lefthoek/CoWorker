@@ -54,11 +54,21 @@
 		console.log(action);
 		dispatch('changePoints', { action, points, ask });
 	};
+
+	const changeSummary = ({}) => {
+		dispatch('changeSummary', { ask });
+	};
 </script>
 
 <div class="font-mono font-normal text-1xl md:text-1xl space-y-6">
 	<div class="flex text-3xl text-background align-middle md:text-4xl font-semibold justify-between">
 		<p>{ask.team}</p>
+		<input
+			on:change={changeSummary}
+			class="bg-dark md:text-2xl"
+			type="text"
+			bind:value={ask.summary}
+		/>
 		<Score on:changePoints={({ detail }) => changePoints(detail)} points={ask.points} />
 		<Toggle class="ml-4" on:toggle={toggleResolve} checked={ask.resolved} />
 	</div>
