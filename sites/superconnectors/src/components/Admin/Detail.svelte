@@ -1,11 +1,22 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import type { Ask, Contestant } from '$types/models';
+	import { countdown } from '$stores/time';
 	import Toggle from '$components/Toggle.svelte';
+	import Timer from '$components/Timer.svelte';
 	import Score from '$components/Score.svelte';
 	import TagGroup from '$components/TagGroup.svelte';
+	import Button from '$components/Button.svelte';
 	export let superconnectors: Contestant[];
 	export let ask: Ask;
+
+	function formatTime(ms: number) {
+		const seconds = Math.ceil(ms / 1000);
+		return seconds;
+	}
+
+	$: critical = $countdown < 410000;
+	$: formatted = formatTime($countdown);
 
 	const difference = (a: any[], b: any[] = []) => {
 		return a.filter(
@@ -53,6 +64,9 @@
 	</div>
 	<TagGroup on:selectItem={({ detail }) => handleSelect(detail)} items={selectedSuperconnectors} />
 	<TagGroup on:selectItem={({ detail }) => handleSelect(detail)} items={availableSuperconnectors} />
+	<Button on:click={countdown.start}>Start Timer</Button>
+	<Timer />
+	<Button on:click={countdown.stop}>Stop Timer</Button>
 </div>
 
 <style>

@@ -6,23 +6,29 @@ export const _countdown = () => {
 	const start = () => {
 		const currentTime = Number(new Date());
 		const deadline = Number(new Date(currentTime + 7 * 60 * 1000));
-		setInterval(() => {
-			set(deadline);
+
+		interval = setInterval(() => {
+			const currentTime = Number(new Date());
+			const newTime = deadline - currentTime;
+			if (newTime === 0) {
+				clearInterval(interval);
+				return set(null);
+			}
+			return set(deadline - currentTime);
 		}, 1000);
+	};
+	const stop = () => {
+		if (interval) {
+			clearInterval(interval);
+		}
 	};
 
 	const reset = () => {
-		if (interval) {
-			unsubscribe();
-		}
-		interval = start();
+		stop();
+		start();
 	};
 
-	const unsubscribe = () => {
-		clearInterval(interval);
-	};
-
-	return { subscribe, unsubscribe, reset };
+	return { subscribe, start, stop, reset };
 };
 
 export const countdown = _countdown();
